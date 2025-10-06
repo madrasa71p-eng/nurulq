@@ -904,49 +904,32 @@
             
             <div class="dashboard-card">
                 <h5><i class="fas fa-download"></i> ডেটা ব্যাকআপ</h5>
-                <p>আপনার সমস্ত ডেটা ডাউনলোড করুন</p>
-                <button class="btn btn-primary" onclick="downloadBackup()">ডেটা ডাউনলোড করুন</button>
+                <p>সমস্ত ছাত্র এবং বেতন তথ্য ডাউনলোড করুন</p>
+                <button class="btn btn-primary" onclick="downloadBackup()">ব্যাকআপ ডাউনলোড</button>
             </div>
             
             <div class="dashboard-card">
                 <h5><i class="fas fa-upload"></i> ডেটা রিস্টোর</h5>
                 <p>ব্যাকআপ থেকে ডেটা রিস্টোর করুন</p>
-                <input type="file" class="form-control mb-2" id="restore-file" accept=".json">
-                <button class="btn btn-primary" onclick="restoreBackup()">ডেটা রিস্টোর করুন</button>
+                <input type="file" class="form-control mb-2" id="backup-file" accept=".json">
+                <button class="btn btn-primary" onclick="restoreBackup()">ডেটা রিস্টোর</button>
             </div>
             
             <div class="dashboard-card">
-                <h5><i class="fas fa-cog"></i> মাসিক বেতন সেটিংস</h5>
-                <p>প্রতিটি ক্লাসের জন্য মাসিক বেতন নির্ধারণ করুন</p>
-                <form id="fee-settings-form">
-                    <div class="mb-2">
-                        <label for="baby-class-fee" class="form-label">শিশু জামাত</label>
-                        <input type="number" class="form-control" id="baby-class-fee" placeholder="মাসিক বেতন">
-                    </div>
-                    <div class="mb-2">
-                        <label for="first-class-fee" class="form-label">প্রথম জামাত</label>
-                        <input type="number" class="form-control" id="first-class-fee" placeholder="মাসিক বেতন">
-                    </div>
-                    <div class="mb-2">
-                        <label for="second-class-fee" class="form-label">দ্বিতীয় জামাত</label>
-                        <input type="number" class="form-control" id="second-class-fee" placeholder="মাসিক বেতন">
-                    </div>
-                    <div class="mb-2">
-                        <label for="third-class-fee" class="form-label">তৃতীয় জামাত</label>
-                        <input type="number" class="form-control" id="third-class-fee" placeholder="মাসিক বেতন">
-                    </div>
-                    <div class="mb-2">
-                        <label for="hifz-class-fee" class="form-label">হিফজ বিভাগ</label>
-                        <input type="number" class="form-control" id="hifz-class-fee" placeholder="মাসিক বেতন">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">সেভ করুন</button>
-                </form>
-            </div>
-            
-            <div class="dashboard-card">
-                <h5><i class="fas fa-trash-alt"></i> ডেটা রিসেট</h5>
-                <p>সতর্কতা: এটি সমস্ত ডেটা মুছে ফেলবে</p>
-                <button class="btn btn-danger" onclick="resetData()">সমস্ত ডেটা রিসেট করুন</button>
+                <h5><i class="fas fa-cog"></i> অ্যাপ সেটিংস</h5>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="auto-backup">
+                    <label class="form-check-label" for="auto-backup">
+                        স্বয়ংক্রিয় ব্যাকআপ
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="notifications">
+                    <label class="form-check-label" for="notifications">
+                        বিজ্ঞপ্তি সক্রিয় করুন
+                    </label>
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()">সেটিংস সংরক্ষণ করুন</button>
             </div>
         </div>
     </div>
@@ -973,8 +956,6 @@
             appId: "1:419232141919:web:b2fe574da3a0e75df381ea",
 
             measurementId: "G-JRHZC88FC8"
-
-
         };
 
         // Initialize Firebase
@@ -985,172 +966,347 @@
         // Global variables
         let currentUser = null;
         let currentClass = '';
+        let students = [];
+        let payments = [];
         let allStudents = [];
-        let allPayments = [];
-        let classFeeSettings = {};
-        let studentsPerPage = 10;
-        let currentPage = 1;
+        let classChart = null;
+        let feeChart = null;
 
         // DOM elements
         const loginPage = document.getElementById('login-page');
         const mainApp = document.getElementById('main-app');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginMessage = document.getElementById('login-message');
         const userEmail = document.getElementById('user-email');
         const currentTime = document.getElementById('current-time');
         const loader = document.querySelector('.loader');
         const toast = document.querySelector('.toast');
         const toastMessage = document.getElementById('toast-message');
-        const bootstrapToast = new bootstrap.Toast(toast);
+        const bsToast = new bootstrap.Toast(toast);
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
-            
-            // Check if user is logged in
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    userEmail.textContent = user.email;
-                    loginPage.style.display = 'none';
-                    mainApp.style.display = 'block';
-                    loadFeeSettings();
-                    loadDashboardData();
-                } else {
-                    loginPage.style.display = 'block';
-                    mainApp.style.display = 'none';
-                }
-            });
-            
-            // Setup event listeners
-            setupEventListeners();
+        // Firebase Auth State Observer
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                userEmail.textContent = user.email;
+                loginPage.style.display = 'none';
+                mainApp.style.display = 'block';
+                loadAllData();
+                startAutoDueMonthAddition();
+            } else {
+                currentUser = null;
+                loginPage.style.display = 'block';
+                mainApp.style.display = 'none';
+                showLoginForm();
+            }
         });
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Login form
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('register-form').addEventListener('submit', handleRegister);
-            
-            // Student forms
-            document.getElementById('add-student-form').addEventListener('submit', addStudent);
-            document.getElementById('edit-student-form').addEventListener('submit', updateStudent);
-            
-            // Fee payment form
-            document.getElementById('fee-payment-form').addEventListener('submit', processFeePayment);
-            document.getElementById('fee-class').addEventListener('change', loadStudentsForFeePayment);
-            document.getElementById('fee-student').addEventListener('change', loadStudentFeeInfo);
-            document.getElementById('exam-fee-checkbox').addEventListener('change', toggleExamFee);
-            document.getElementById('paid-months').addEventListener('input', calculatePayment);
-            
-            // Fee settings form
-            document.getElementById('fee-settings-form').addEventListener('submit', saveFeeSettings);
-            
-            // Search functionality
-            document.getElementById('student-search').addEventListener('input', filterStudents);
-            document.getElementById('student-search-input').addEventListener('input', handleSmartSearch);
-        }
-
-        // Firebase Authentication Functions
-        function handleLogin(e) {
+        // Login Form Handler
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            showLoader();
-            
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
+            showLoader();
             auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
+                .then(() => {
                     hideLoader();
                     showToast('সফলভাবে লগইন হয়েছে!', 'success');
                 })
                 .catch((error) => {
                     hideLoader();
-                    showLoginMessage(error.message);
+                    loginMessage.textContent = error.message;
+                    loginMessage.style.display = 'block';
                 });
-        }
+        });
 
-        function handleRegister(e) {
+        // Register Form Handler
+        registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            showLoader();
-            
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
             
             if (password !== confirmPassword) {
-                hideLoader();
-                showLoginMessage('পাসওয়ার্ড মিলছে না!');
+                loginMessage.textContent = 'পাসওয়ার্ড মিলছে না!';
+                loginMessage.style.display = 'block';
                 return;
             }
             
+            if (password.length < 6) {
+                loginMessage.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে!';
+                loginMessage.style.display = 'block';
+                return;
+            }
+            
+            showLoader();
             auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
+                .then(() => {
                     hideLoader();
                     showToast('সফলভাবে রেজিস্টার হয়েছে!', 'success');
-                    showLoginForm();
                 })
                 .catch((error) => {
                     hideLoader();
-                    showLoginMessage(error.message);
+                    loginMessage.textContent = error.message;
+                    loginMessage.style.display = 'block';
                 });
-        }
+        });
 
-        function logout() {
-            auth.signOut().then(() => {
-                showToast('সফলভাবে লগআউট হয়েছে!', 'success');
-            });
-        }
-
+        // Form switching functions
         function showLoginForm() {
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('login-message').style.display = 'none';
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            loginMessage.style.display = 'none';
         }
 
         function showRegisterForm() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('register-form').style.display = 'block';
-            document.getElementById('login-message').style.display = 'none';
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            loginMessage.style.display = 'none';
         }
 
-        function showLoginMessage(message) {
-            const loginMessage = document.getElementById('login-message');
-            loginMessage.textContent = message;
-            loginMessage.style.display = 'block';
+        // Logout function
+        function logout() {
+            auth.signOut();
         }
 
-        // Page Navigation Functions
+        // Show/Hide Loader
+        function showLoader() {
+            loader.style.display = 'flex';
+        }
+
+        function hideLoader() {
+            loader.style.display = 'none';
+        }
+
+        // Show Toast Notification
+        function showToast(message, type = 'info') {
+            toastMessage.textContent = message;
+            if (type === 'success') {
+                toast.classList.remove('bg-danger');
+                toast.classList.add('bg-success');
+            } else if (type === 'error') {
+                toast.classList.remove('bg-success');
+                toast.classList.add('bg-danger');
+            } else {
+                toast.classList.remove('bg-success', 'bg-danger');
+            }
+            bsToast.show();
+        }
+
+        // Update Current Time
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            currentTime.textContent = now.toLocaleDateString('bn-BD', options);
+        }
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+
+        // Page Navigation
         function showPage(pageId, className = '') {
             // Hide all pages
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => {
+            document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active-page');
             });
             
             // Show selected page
-            const selectedPage = document.getElementById(pageId);
-            selectedPage.classList.add('active-page');
+            document.getElementById(pageId).classList.add('active-page');
             
-            // Load data for specific pages
-            if (pageId === 'student-list-page' && className) {
+            // Set current class if provided
+            if (className) {
                 currentClass = className;
                 document.getElementById('student-list-title').textContent = `${className} - ছাত্র তালিকা`;
                 loadStudentsByClass(className);
-            } else if (pageId === 'unpaid-students-page') {
-                loadUnpaidStudents();
+            }
+            
+            // Load specific page data
+            if (pageId === 'dashboard-page') {
+                loadDashboard();
             } else if (pageId === 'today-payments-page') {
                 loadTodayPayments();
-            } else if (pageId === 'dashboard-page') {
-                loadDashboardData();
-            } else if (pageId === 'settings-page') {
-                loadFeeSettings();
+            } else if (pageId === 'unpaid-students-page') {
+                loadUnpaidStudents();
             }
         }
 
-        // Student Management Functions
-        function addStudent(e) {
-            e.preventDefault();
+        // Load all data from Firestore
+        function loadAllData() {
             showLoader();
+            Promise.all([
+                loadStudents(),
+                loadPayments()
+            ]).then(() => {
+                hideLoader();
+            }).catch(error => {
+                hideLoader();
+                console.error('Error loading data:', error);
+                showToast('ডেটা লোড করতে সমস্যা হয়েছে!', 'error');
+            });
+        }
+
+        // Load students from Firestore
+        function loadStudents() {
+            return new Promise((resolve, reject) => {
+                db.collection('students')
+                    .where('userId', '==', currentUser.uid)
+                    .get()
+                    .then((querySnapshot) => {
+                        students = [];
+                        allStudents = [];
+                        querySnapshot.forEach((doc) => {
+                            const student = { id: doc.id, ...doc.data() };
+                            students.push(student);
+                            allStudents.push(student);
+                        });
+                        resolve();
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        }
+
+        // Load payments from Firestore
+        function loadPayments() {
+            return new Promise((resolve, reject) => {
+                db.collection('payments')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .get()
+                    .then((querySnapshot) => {
+                        payments = [];
+                        querySnapshot.forEach((doc) => {
+                            payments.push({ id: doc.id, ...doc.data() });
+                        });
+                        resolve();
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        }
+
+        // Load students by class
+        function loadStudentsByClass(className) {
+            const filteredStudents = students.filter(student => student.class === className);
+            displayStudents(filteredStudents);
+        }
+
+        // Display students in table
+        function displayStudents(studentList, page = 1, pageSize = 10) {
+            const studentListBody = document.getElementById('student-list-body');
+            studentListBody.innerHTML = '';
+            
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const paginatedStudents = studentList.slice(startIndex, endIndex);
+            
+            if (paginatedStudents.length === 0) {
+                studentListBody.innerHTML = '<tr><td colspan="7" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
+                document.getElementById('student-pagination').innerHTML = '';
+                return;
+            }
+            
+            paginatedStudents.forEach((student, index) => {
+                const row = document.createElement('tr');
+                
+                // Calculate due months and amount
+                const dueMonths = student.dueMonths || 0;
+                const dueAmount = dueMonths * student.monthlyFee;
+                
+                // Exam fee status
+                const examFeeStatus = [];
+                if (student.firstExam) examFeeStatus.push('১ম');
+                if (student.secondExam) examFeeStatus.push('২য়');
+                if (student.thirdExam) examFeeStatus.push('৩য়');
+                
+                row.innerHTML = `
+                    <td class="serial-number">${startIndex + index + 1}</td>
+                    <td>
+                        <div>${student.name}</div>
+                        <div class="mobile-number">
+                            <a href="tel:${student.mobile}" class="mobile-link">${student.mobile}</a>
+                        </div>
+                    </td>
+                    <td>${student.monthlyFee}৳</td>
+                    <td>${student.paidMonths || 0}</td>
+                    <td>${dueMonths}</td>
+                    <td>${examFeeStatus.length > 0 ? examFeeStatus.join(', ') : 'বাকি'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary action-btn" onclick="editStudent('${student.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger action-btn" onclick="deleteStudent('${student.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-sm btn-success action-btn" onclick="makePayment('${student.id}')">
+                            <i class="fas fa-money-bill"></i>
+                        </button>
+                    </td>
+                `;
+                studentListBody.appendChild(row);
+            });
+            
+            // Generate pagination
+            generatePagination(studentList.length, page, pageSize, 'student-pagination', (newPage) => {
+                displayStudents(studentList, newPage, pageSize);
+            });
+        }
+
+        // Generate pagination
+        function generatePagination(totalItems, currentPage, pageSize, containerId, onPageChange) {
+            const totalPages = Math.ceil(totalItems / pageSize);
+            const paginationContainer = document.getElementById(containerId);
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" tabindex="-1">পূর্ববর্তী</a>`;
+            prevLi.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) onPageChange(currentPage - 1);
+            });
+            paginationContainer.appendChild(prevLi);
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLi = document.createElement('li');
+                pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageLi.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                pageLi.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    onPageChange(i);
+                });
+                paginationContainer.appendChild(pageLi);
+            }
+            
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#">পরবর্তী</a>`;
+            nextLi.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) onPageChange(currentPage + 1);
+            });
+            paginationContainer.appendChild(nextLi);
+        }
+
+        // Add Student Form Handler
+        document.getElementById('add-student-form').addEventListener('submit', (e) => {
+            e.preventDefault();
             
             const studentClass = document.getElementById('student-class').value;
             const name = document.getElementById('student-name').value;
@@ -1161,8 +1317,11 @@
             const admissionDate = document.getElementById('admission-date').value;
             const monthlyFee = parseInt(document.getElementById('student-monthly-fee').value);
             
-            // Get class fee if not provided
-            const finalMonthlyFee = monthlyFee || classFeeSettings[studentClass] || 0;
+            // Validate mobile number
+            if (!/^(?:\+88|01)?\d{11}$/.test(mobile)) {
+                showToast('সঠিক মোবাইল নম্বর দিন!', 'error');
+                return;
+            }
             
             const studentData = {
                 class: studentClass,
@@ -1172,7 +1331,7 @@
                 mobile: mobile,
                 address: address,
                 admissionDate: admissionDate,
-                monthlyFee: finalMonthlyFee,
+                monthlyFee: monthlyFee,
                 paidMonths: 0,
                 dueMonths: 0,
                 totalPaid: 0,
@@ -1180,189 +1339,53 @@
                 firstExam: false,
                 secondExam: false,
                 thirdExam: false,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                userId: currentUser.uid
+                userId: currentUser.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
+            showLoader();
             db.collection('students').add(studentData)
                 .then(() => {
                     hideLoader();
                     showToast('ছাত্র সফলভাবে যোগ হয়েছে!', 'success');
                     document.getElementById('add-student-form').reset();
-                    showPage('home-page');
+                    loadStudents();
                 })
-                .catch(error => {
+                .catch((error) => {
                     hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
+                    console.error('Error adding student:', error);
+                    showToast('ছাত্র যোগ করতে সমস্যা হয়েছে!', 'error');
                 });
-        }
+        });
 
-        function loadStudentsByClass(className) {
-            showLoader();
-            
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .where('class', '==', className)
-                .orderBy('name')
-                .get()
-                .then(querySnapshot => {
-                    allStudents = [];
-                    querySnapshot.forEach(doc => {
-                        allStudents.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    
-                    hideLoader();
-                    displayStudents(allStudents);
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
-        }
-
-        function displayStudents(students, page = 1) {
-            const studentListBody = document.getElementById('student-list-body');
-            studentListBody.innerHTML = '';
-            
-            if (students.length === 0) {
-                studentListBody.innerHTML = '<tr><td colspan="7" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
-                document.getElementById('student-pagination').innerHTML = '';
-                return;
-            }
-            
-            // Calculate pagination
-            const totalPages = Math.ceil(students.length / studentsPerPage);
-            const startIndex = (page - 1) * studentsPerPage;
-            const endIndex = Math.min(startIndex + studentsPerPage, students.length);
-            const pageStudents = students.slice(startIndex, endIndex);
-            
-            // Display students
-            pageStudents.forEach((student, index) => {
-                const serialNumber = startIndex + index + 1;
-                const examFeeStatus = getExamFeeStatus(student);
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="serial-number">${serialNumber}</td>
-                    <td>
-                        <div>${student.name}</div>
-                        <div class="mobile-number">
-                            <a href="tel:${student.mobile}" class="mobile-link">${student.mobile}</a>
-                        </div>
-                    </td>
-                    <td>${student.monthlyFee}৳</td>
-                    <td>${student.paidMonths || 0}</td>
-                    <td>${student.dueMonths || 0}</td>
-                    <td>${examFeeStatus}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary action-btn" onclick="editStudent('${student.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger action-btn" onclick="deleteStudent('${student.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                studentListBody.appendChild(row);
-            });
-            
-            // Display pagination
-            displayPagination(totalPages, page);
-        }
-
-        function displayPagination(totalPages, currentPage) {
-            const pagination = document.getElementById('student-pagination');
-            pagination.innerHTML = '';
-            
-            if (totalPages <= 1) return;
-            
-            // Previous button
-            const prevLi = document.createElement('li');
-            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
-            pagination.appendChild(prevLi);
-            
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                const li = document.createElement('li');
-                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
-                pagination.appendChild(li);
-            }
-            
-            // Next button
-            const nextLi = document.createElement('li');
-            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
-            pagination.appendChild(nextLi);
-        }
-
-        function changePage(page) {
-            currentPage = page;
-            displayStudents(allStudents, page);
-        }
-
-        function filterStudents() {
-            const searchTerm = document.getElementById('student-search').value.toLowerCase();
-            
-            if (searchTerm === '') {
-                displayStudents(allStudents, currentPage);
-                return;
-            }
-            
-            const filteredStudents = allStudents.filter(student => 
-                student.name.toLowerCase().includes(searchTerm) ||
-                student.fatherName.toLowerCase().includes(searchTerm) ||
-                student.mobile.includes(searchTerm)
-            );
-            
-            displayStudents(filteredStudents, 1);
-        }
-
+        // Edit Student
         function editStudent(studentId) {
-            showLoader();
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
             
-            db.collection('students').doc(studentId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const student = doc.data();
-                        
-                        document.getElementById('edit-student-id').value = studentId;
-                        document.getElementById('edit-student-class').value = student.class;
-                        document.getElementById('edit-student-name').value = student.name;
-                        document.getElementById('edit-father-name').value = student.fatherName;
-                        document.getElementById('edit-mother-name').value = student.motherName || '';
-                        document.getElementById('edit-mobile-number').value = student.mobile;
-                        document.getElementById('edit-address').value = student.address || '';
-                        document.getElementById('edit-admission-date').value = student.admissionDate;
-                        document.getElementById('edit-monthly-fee').value = student.monthlyFee;
-                        document.getElementById('edit-paid-months').value = student.paidMonths || 0;
-                        document.getElementById('edit-due-months').value = student.dueMonths || 0;
-                        document.getElementById('edit-total-paid').value = student.totalPaid || 0;
-                        document.getElementById('edit-total-due').value = student.totalDue || 0;
-                        document.getElementById('edit-first-exam').checked = student.firstExam || false;
-                        document.getElementById('edit-second-exam').checked = student.secondExam || false;
-                        document.getElementById('edit-third-exam').checked = student.thirdExam || false;
-                        
-                        hideLoader();
-                        showPage('edit-student-page');
-                    } else {
-                        hideLoader();
-                        showToast('ছাত্র পাওয়া যায়নি!', 'error');
-                    }
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
+            document.getElementById('edit-student-id').value = studentId;
+            document.getElementById('edit-student-class').value = student.class;
+            document.getElementById('edit-student-name').value = student.name;
+            document.getElementById('edit-father-name').value = student.fatherName;
+            document.getElementById('edit-mother-name').value = student.motherName || '';
+            document.getElementById('edit-mobile-number').value = student.mobile;
+            document.getElementById('edit-address').value = student.address || '';
+            document.getElementById('edit-admission-date').value = student.admissionDate;
+            document.getElementById('edit-monthly-fee').value = student.monthlyFee;
+            document.getElementById('edit-paid-months').value = student.paidMonths || 0;
+            document.getElementById('edit-due-months').value = student.dueMonths || 0;
+            document.getElementById('edit-total-paid').value = student.totalPaid || 0;
+            document.getElementById('edit-total-due').value = student.totalDue || 0;
+            document.getElementById('edit-first-exam').checked = student.firstExam || false;
+            document.getElementById('edit-second-exam').checked = student.secondExam || false;
+            document.getElementById('edit-third-exam').checked = student.thirdExam || false;
+            
+            showPage('edit-student-page');
         }
 
-        function updateStudent(e) {
+        // Edit Student Form Handler
+        document.getElementById('edit-student-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            showLoader();
             
             const studentId = document.getElementById('edit-student-id').value;
             const studentClass = document.getElementById('edit-student-class').value;
@@ -1381,7 +1404,13 @@
             const secondExam = document.getElementById('edit-second-exam').checked;
             const thirdExam = document.getElementById('edit-third-exam').checked;
             
-            const updatedData = {
+            // Validate mobile number
+            if (!/^(?:\+88|01)?\d{11}$/.test(mobile)) {
+                showToast('সঠিক মোবাইল নম্বর দিন!', 'error');
+                return;
+            }
+            
+            const studentData = {
                 class: studentClass,
                 name: name,
                 fatherName: fatherName,
@@ -1400,278 +1429,230 @@
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
-            db.collection('students').doc(studentId).update(updatedData)
+            showLoader();
+            db.collection('students').doc(studentId).update(studentData)
                 .then(() => {
                     hideLoader();
-                    showToast('ছাত্র সফলভাবে আপডেট হয়েছে!', 'success');
-                    showPage('student-list-page', currentClass);
+                    showToast('ছাত্র তথ্য সফলভাবে আপডেট হয়েছে!', 'success');
+                    loadStudents().then(() => {
+                        showPage('student-list-page', currentClass);
+                    });
                 })
-                .catch(error => {
+                .catch((error) => {
                     hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
+                    console.error('Error updating student:', error);
+                    showToast('ছাত্র আপডেট করতে সমস্যা হয়েছে!', 'error');
                 });
-        }
+        });
 
+        // Delete Student
         function deleteStudent(studentId) {
-            if (confirm('আপনি কি নিশ্চিত যে আপনি এই ছাত্রকে ডিলিট করতে চান?')) {
-                showLoader();
-                
-                db.collection('students').doc(studentId).delete()
-                    .then(() => {
-                        hideLoader();
-                        showToast('ছাত্র সফলভাবে ডিলিট হয়েছে!', 'success');
-                        loadStudentsByClass(currentClass);
-                    })
-                    .catch(error => {
-                        hideLoader();
-                        showToast('ত্রুটি: ' + error.message, 'error');
-                    });
-            }
-        }
-
-        // Fee Payment Functions
-        function loadStudentsForFeePayment() {
-            const classValue = document.getElementById('fee-class').value;
-            const studentSelect = document.getElementById('fee-student');
-            
-            studentSelect.innerHTML = '<option value="">ছাত্র নির্বাচন করুন</option>';
-            
-            if (!classValue) return;
-            
-            showLoader();
-            
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .where('class', '==', classValue)
-                .orderBy('name')
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        const student = doc.data();
-                        const option = document.createElement('option');
-                        option.value = doc.id;
-                        option.textContent = `${student.name} (${student.fatherName})`;
-                        studentSelect.appendChild(option);
-                    });
-                    
-                    hideLoader();
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
-        }
-
-        function loadStudentFeeInfo() {
-            const studentId = document.getElementById('fee-student').value;
-            
-            if (!studentId) {
-                document.getElementById('monthly-fee').value = '';
-                document.getElementById('paid-months').value = '';
-                document.getElementById('paid-amount').value = '';
-                document.getElementById('due-amount').value = '';
+            if (!confirm('আপনি কি নিশ্চিত যে আপনি এই ছাত্রকে মুছে ফেলতে চান?')) {
                 return;
             }
             
-            db.collection('students').doc(studentId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const student = doc.data();
-                        document.getElementById('monthly-fee').value = student.monthlyFee;
-                        document.getElementById('paid-months').value = student.paidMonths || 0;
-                        document.getElementById('paid-amount').value = '';
-                        document.getElementById('due-amount').value = student.totalDue || 0;
-                    }
+            showLoader();
+            db.collection('students').doc(studentId).delete()
+                .then(() => {
+                    hideLoader();
+                    showToast('ছাত্র সফলভাবে মুছে ফেলা হয়েছে!', 'success');
+                    loadStudents().then(() => {
+                        if (currentClass) {
+                            loadStudentsByClass(currentClass);
+                        }
+                    });
                 })
-                .catch(error => {
-                    showToast('ত্রুটি: ' + error.message, 'error');
+                .catch((error) => {
+                    hideLoader();
+                    console.error('Error deleting student:', error);
+                    showToast('ছাত্র মুছতে সমস্যা হয়েছে!', 'error');
                 });
         }
 
-        function calculatePayment() {
-            const monthlyFee = parseInt(document.getElementById('monthly-fee').value) || 0;
-            const paidMonths = parseInt(document.getElementById('paid-months').value) || 0;
-            const paidAmount = monthlyFee * paidMonths;
+        // Make Payment for a student
+        function makePayment(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
             
-            document.getElementById('paid-amount').value = paidAmount;
+            document.getElementById('fee-class').value = student.class;
+            document.getElementById('fee-student').value = studentId;
+            document.getElementById('monthly-fee').value = student.monthlyFee;
+            
+            // Calculate due amount
+            const dueMonths = student.dueMonths || 0;
+            document.getElementById('due-amount').value = dueMonths * student.monthlyFee;
+            
+            showPage('fee-payment-page');
         }
 
-        function toggleExamFee() {
-            const examFeeContainer = document.getElementById('exam-fee-container');
-            const examFeeCheckbox = document.getElementById('exam-fee-checkbox');
-            
-            if (examFeeCheckbox.checked) {
-                examFeeContainer.style.display = 'block';
-            } else {
-                examFeeContainer.style.display = 'none';
-                document.getElementById('first-exam').checked = false;
-                document.getElementById('second-exam').checked = false;
-                document.getElementById('third-exam').checked = false;
-                document.getElementById('exam-fee-amount').value = '';
-            }
-        }
-
-        function processFeePayment(e) {
+        // Fee Payment Form Handler
+        document.getElementById('fee-payment-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            showLoader();
             
-            const classValue = document.getElementById('fee-class').value;
             const studentId = document.getElementById('fee-student').value;
-            const monthlyFee = parseInt(document.getElementById('monthly-fee').value);
             const paidMonths = parseInt(document.getElementById('paid-months').value);
             const paidAmount = parseInt(document.getElementById('paid-amount').value);
-            const dueAmount = parseInt(document.getElementById('due-amount').value) || 0;
+            const examFeeCheckbox = document.getElementById('exam-fee-checkbox').checked;
+            const firstExam = document.getElementById('first-exam').checked;
+            const secondExam = document.getElementById('second-exam').checked;
+            const thirdExam = document.getElementById('third-exam').checked;
+            const examFeeAmount = examFeeCheckbox ? parseInt(document.getElementById('exam-fee-amount').value) || 0 : 0;
             const paymentMethod = document.getElementById('payment-method').value;
             
-            // Check if exam fee is included
-            const includeExamFee = document.getElementById('exam-fee-checkbox').checked;
-            let examFeeAmount = 0;
-            let examFeeDetails = {};
-            
-            if (includeExamFee) {
-                examFeeAmount = parseInt(document.getElementById('exam-fee-amount').value) || 0;
-                examFeeDetails = {
-                    firstExam: document.getElementById('first-exam').checked,
-                    secondExam: document.getElementById('second-exam').checked,
-                    thirdExam: document.getElementById('third-exam').checked
-                };
+            if (!studentId) {
+                showToast('দয়া করে একজন ছাত্র নির্বাচন করুন!', 'error');
+                return;
             }
             
-            const totalAmount = paidAmount + examFeeAmount;
-            const paymentDate = new Date().toISOString().split('T')[0];
-            const paymentTime = new Date().toLocaleTimeString();
+            const student = students.find(s => s.id === studentId);
+            if (!student) {
+                showToast('ছাত্র পাওয়া যায়নি!', 'error');
+                return;
+            }
             
-            // Get student data first
-            db.collection('students').doc(studentId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const student = doc.data();
-                        
-                        // Calculate new values
-                        const newPaidMonths = (student.paidMonths || 0) + paidMonths;
-                        const newTotalPaid = (student.totalPaid || 0) + totalAmount;
-                        const newTotalDue = (student.totalDue || 0) - paidAmount;
-                        
-                        // Update student record
-                        const studentUpdate = {
-                            paidMonths: newPaidMonths,
-                            totalPaid: newTotalPaid,
-                            totalDue: newTotalDue >= 0 ? newTotalDue : 0,
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        };
-                        
-                        // Add exam fee details if included
-                        if (includeExamFee) {
-                            studentUpdate.firstExam = examFeeDetails.firstExam || student.firstExam;
-                            studentUpdate.secondExam = examFeeDetails.secondExam || student.secondExam;
-                            studentUpdate.thirdExam = examFeeDetails.thirdExam || student.thirdExam;
-                        }
-                        
-                        // Update student
-                        return db.collection('students').doc(studentId).update(studentUpdate)
-                            .then(() => {
-                                // Add payment record
-                                const paymentData = {
-                                    studentId: studentId,
-                                    studentName: student.name,
-                                    studentClass: student.class,
-                                    monthlyFee: monthlyFee,
-                                    paidMonths: paidMonths,
-                                    paidAmount: paidAmount,
-                                    examFeeAmount: examFeeAmount,
-                                    totalAmount: totalAmount,
-                                    paymentMethod: paymentMethod,
-                                    paymentDate: paymentDate,
-                                    paymentTime: paymentTime,
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    userId: currentUser.uid
-                                };
-                                
-                                return db.collection('payments').add(paymentData);
-                            });
-                    } else {
-                        throw new Error('ছাত্র পাওয়া যায়নি!');
-                    }
-                })
+            // Calculate total payment
+            const totalPayment = paidAmount + examFeeAmount;
+            
+            // Update student data
+            const updatedPaidMonths = (student.paidMonths || 0) + paidMonths;
+            const updatedDueMonths = Math.max(0, (student.dueMonths || 0) - paidMonths);
+            const updatedTotalPaid = (student.totalPaid || 0) + totalPayment;
+            const updatedTotalDue = Math.max(0, (student.totalDue || 0) - paidAmount);
+            
+            const studentUpdate = {
+                paidMonths: updatedPaidMonths,
+                dueMonths: updatedDueMonths,
+                totalPaid: updatedTotalPaid,
+                totalDue: updatedTotalDue,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            // Update exam fee status if applicable
+            if (examFeeCheckbox) {
+                if (firstExam) studentUpdate.firstExam = true;
+                if (secondExam) studentUpdate.secondExam = true;
+                if (thirdExam) studentUpdate.thirdExam = true;
+            }
+            
+            // Create payment record
+            const paymentData = {
+                studentId: studentId,
+                studentName: student.name,
+                studentClass: student.class,
+                paidMonths: paidMonths,
+                paidAmount: paidAmount,
+                examFeeAmount: examFeeAmount,
+                totalAmount: totalPayment,
+                paymentMethod: paymentMethod,
+                firstExam: firstExam,
+                secondExam: secondExam,
+                thirdExam: thirdExam,
+                userId: currentUser.uid,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            showLoader();
+            
+            // Update student and add payment in a batch
+            const batch = db.batch();
+            const studentRef = db.collection('students').doc(studentId);
+            const paymentRef = db.collection('payments').doc();
+            
+            batch.update(studentRef, studentUpdate);
+            batch.set(paymentRef, paymentData);
+            
+            batch.commit()
                 .then(() => {
                     hideLoader();
                     showToast('বেতন সফলভাবে জমা হয়েছে!', 'success');
                     document.getElementById('fee-payment-form').reset();
-                    document.getElementById('exam-fee-container').style.display = 'none';
+                    loadAllData();
+                    showPage('home-page');
                 })
-                .catch(error => {
+                .catch((error) => {
                     hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
+                    console.error('Error making payment:', error);
+                    showToast('বেতন জমা করতে সমস্যা হয়েছে!', 'error');
                 });
-        }
+        });
 
-        // Unpaid Students Functions
-        function loadUnpaidStudents() {
-            showLoader();
+        // Load students for fee payment dropdown
+        document.getElementById('fee-class').addEventListener('change', function() {
+            const className = this.value;
+            const studentSelect = document.getElementById('fee-student');
+            studentSelect.innerHTML = '<option value="">ছাত্র নির্বাচন করুন</option>';
             
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .orderBy('class')
-                .orderBy('name')
-                .get()
-                .then(querySnapshot => {
-                    const unpaidStudents = {};
-                    
-                    querySnapshot.forEach(doc => {
-                        const student = {
-                            id: doc.id,
-                            ...doc.data()
-                        };
-                        
-                        // Check if student has due amount or due months
-                        if ((student.totalDue && student.totalDue > 0) || (student.dueMonths && student.dueMonths > 0)) {
-                            const studentClass = student.class;
-                            
-                            if (!unpaidStudents[studentClass]) {
-                                unpaidStudents[studentClass] = [];
-                            }
-                            
-                            unpaidStudents[studentClass].push(student);
-                        }
-                    });
-                    
-                    hideLoader();
-                    displayUnpaidStudents(unpaidStudents);
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
-        }
+            if (!className) return;
+            
+            const classStudents = students.filter(student => student.class === className);
+            classStudents.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.name} (${student.fatherName})`;
+                studentSelect.appendChild(option);
+            });
+        });
 
-        function displayUnpaidStudents(unpaidStudents) {
-            const container = document.getElementById('unpaid-students-container');
-            container.innerHTML = '';
+        // Update due amount when student is selected
+        document.getElementById('fee-student').addEventListener('change', function() {
+            const studentId = this.value;
+            const student = students.find(s => s.id === studentId);
             
-            if (Object.keys(unpaidStudents).length === 0) {
-                container.innerHTML = '<div class="alert alert-info">কোনো বেতন বাকি নেই!</div>';
-                return;
+            if (student) {
+                document.getElementById('monthly-fee').value = student.monthlyFee;
+                const dueMonths = student.dueMonths || 0;
+                document.getElementById('due-amount').value = dueMonths * student.monthlyFee;
+            } else {
+                document.getElementById('monthly-fee').value = '';
+                document.getElementById('due-amount').value = '';
             }
+        });
+
+        // Toggle exam fee container
+        document.getElementById('exam-fee-checkbox').addEventListener('change', function() {
+            document.getElementById('exam-fee-container').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Load unpaid students
+        function loadUnpaidStudents() {
+            const unpaidStudentsContainer = document.getElementById('unpaid-students-container');
+            unpaidStudentsContainer.innerHTML = '';
             
-            for (const [className, students] of Object.entries(unpaidStudents)) {
+            // Group students by class
+            const classes = ['শিশু জামাত', 'প্রথম জামাত', 'দ্বিতীয় জামাত', 'তৃতীয় জামাত', 'হিফজ বিভাগ'];
+            
+            classes.forEach(className => {
+                const classStudents = students.filter(student => 
+                    student.class === className && (student.dueMonths > 0 || student.totalDue > 0)
+                );
+                
+                if (classStudents.length === 0) return;
+                
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
                 
-                let totalDue = 0;
-                students.forEach(student => {
-                    totalDue += student.totalDue || 0;
-                });
+                // Calculate class summary
+                const totalDueAmount = classStudents.reduce((sum, student) => {
+                    return sum + (student.dueMonths * student.monthlyFee);
+                }, 0);
+                
+                const totalDueMonths = classStudents.reduce((sum, student) => {
+                    return sum + student.dueMonths;
+                }, 0);
                 
                 classSection.innerHTML = `
                     <div class="class-header">
                         <h5>${className}</h5>
-                        <span>মোট বাকি: ${totalDue}৳</span>
+                        <div>
+                            <span class="badge bg-warning">মোট বাকি: ${totalDueAmount}৳</span>
+                            <span class="badge bg-danger ms-2">বাকি মাস: ${totalDueMonths}</span>
+                        </div>
                     </div>
                     <div class="class-content">
                         <div class="class-summary">
-                            <span>মোট ছাত্র: ${students.length} জন</span>
-                            <button class="download-btn" onclick="downloadClassReport('${className}')">
-                                <i class="fas fa-download"></i> রিপোর্ট ডাউনলোড
+                            <span>মোট ছাত্র: ${classStudents.length} জন</span>
+                            <button class="download-btn" onclick="downloadUnpaidList('${className}')">
+                                <i class="fas fa-download"></i> ডাউনলোড
                             </button>
                         </div>
                         <div class="table-responsive">
@@ -1680,232 +1661,198 @@
                                     <tr>
                                         <th>নাম</th>
                                         <th>মোবাইল</th>
-                                        <th>মাসিক বেতন</th>
                                         <th>বাকি মাস</th>
                                         <th>বাকি টাকা</th>
                                         <th>অ্যাকশন</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    ${students.map(student => `
-                                        <tr>
-                                            <td>${student.name}</td>
-                                            <td>
-                                                <a href="tel:${student.mobile}" class="mobile-link">${student.mobile}</a>
-                                            </td>
-                                            <td>${student.monthlyFee}৳</td>
-                                            <td>${student.dueMonths || 0}</td>
-                                            <td>${student.totalDue || 0}৳</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-primary action-btn" onclick="takePayment('${student.id}')">
-                                                    <i class="fas fa-money-bill-wave"></i> বেতন নিন
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
+                                <tbody id="unpaid-body-${className.replace(/\s+/g, '-')}">
+                                    <!-- Students will be loaded here -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 `;
                 
-                container.appendChild(classSection);
+                unpaidStudentsContainer.appendChild(classSection);
+                
+                // Populate students for this class
+                const tbody = document.getElementById(`unpaid-body-${className.replace(/\s+/g, '-')}`);
+                classStudents.forEach(student => {
+                    const dueAmount = student.dueMonths * student.monthlyFee;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>
+                            <a href="tel:${student.mobile}" class="mobile-link">${student.mobile}</a>
+                        </td>
+                        <td>${student.dueMonths}</td>
+                        <td>${dueAmount}৳</td>
+                        <td>
+                            <button class="btn btn-sm btn-success action-btn" onclick="makePayment('${student.id}')">
+                                <i class="fas fa-money-bill"></i> বেতন দিন
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+            
+            if (unpaidStudentsContainer.innerHTML === '') {
+                unpaidStudentsContainer.innerHTML = '<div class="alert alert-success text-center">সকল ছাত্রের বেতন পরিশোধিত!</div>';
             }
         }
 
-        function takePayment(studentId) {
-            // Redirect to fee payment page and pre-select the student
-            showPage('fee-payment-page');
+        // Download unpaid list
+        function downloadUnpaidList(className) {
+            const classStudents = students.filter(student => 
+                student.class === className && (student.dueMonths > 0 || student.totalDue > 0)
+            );
             
-            // We need to wait a bit for the page to load
-            setTimeout(() => {
-                db.collection('students').doc(studentId).get()
-                    .then(doc => {
-                        if (doc.exists) {
-                            const student = doc.data();
-                            
-                            // Set the class and student
-                            document.getElementById('fee-class').value = student.class;
-                            loadStudentsForFeePayment();
-                            
-                            // Wait for students to load then select the student
-                            setTimeout(() => {
-                                document.getElementById('fee-student').value = studentId;
-                                loadStudentFeeInfo();
-                            }, 1000);
-                        }
-                    })
-                    .catch(error => {
-                        showToast('ত্রুটি: ' + error.message, 'error');
-                    });
-            }, 500);
+            if (classStudents.length === 0) {
+                showToast('এই ক্লাসে কোনো বাকিপ্রাপ্ত ছাত্র নেই!', 'info');
+                return;
+            }
+            
+            let csvContent = 'নাম,পিতার নাম,মোবাইল,বাকি মাস,বাকি টাকা\n';
+            
+            classStudents.forEach(student => {
+                const dueAmount = student.dueMonths * student.monthlyFee;
+                csvContent += `"${student.name}","${student.fatherName}","${student.mobile}",${student.dueMonths},${dueAmount}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${className}-বাকিপ্রাপ্ত-ছাত্র-তালিকা.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast(`${className} এর বাকিপ্রাপ্ত তালিকা ডাউনলোড হয়েছে!`, 'success');
         }
 
-        // Today's Payments Functions
+        // Load today's payments
         function loadTodayPayments() {
-            showLoader();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayEnd = new Date(today);
+            todayEnd.setHours(23, 59, 59, 999);
             
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('today-date').textContent = `তারিখ: ${formatDate(today)}`;
+            const todayPayments = payments.filter(payment => {
+                const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+                return paymentDate >= today && paymentDate <= todayEnd;
+            });
             
-            db.collection('payments')
-                .where('userId', '==', currentUser.uid)
-                .where('paymentDate', '==', today)
-                .orderBy('paymentTime', 'desc')
-                .get()
-                .then(querySnapshot => {
-                    const paymentsBody = document.getElementById('today-payments-body');
-                    paymentsBody.innerHTML = '';
-                    
-                    if (querySnapshot.empty) {
-                        paymentsBody.innerHTML = '<tr><td colspan="5" class="text-center">আজকে কোনো বেতন জমা হয়নি</td></tr>';
-                        hideLoader();
-                        return;
-                    }
-                    
-                    querySnapshot.forEach(doc => {
-                        const payment = doc.data();
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${payment.studentName}</td>
-                            <td>${payment.studentClass}</td>
-                            <td>${payment.totalAmount}৳</td>
-                            <td>${payment.paymentTime}</td>
-                            <td>${payment.paymentMethod}</td>
-                        `;
-                        paymentsBody.appendChild(row);
-                    });
-                    
-                    hideLoader();
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
+            document.getElementById('today-date').textContent = `তারিখ: ${today.toLocaleDateString('bn-BD')}`;
+            
+            const todayPaymentsBody = document.getElementById('today-payments-body');
+            todayPaymentsBody.innerHTML = '';
+            
+            if (todayPayments.length === 0) {
+                todayPaymentsBody.innerHTML = '<tr><td colspan="5" class="text-center">আজকে কোনো বেতন জমা হয়নি</td></tr>';
+                return;
+            }
+            
+            todayPayments.forEach(payment => {
+                const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+                const timeString = paymentDate.toLocaleTimeString('bn-BD', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
                 });
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${payment.studentName}</td>
+                    <td>${payment.studentClass}</td>
+                    <td>${payment.totalAmount}৳</td>
+                    <td>${timeString}</td>
+                    <td>${payment.paymentMethod}</td>
+                `;
+                todayPaymentsBody.appendChild(row);
+            });
         }
 
-        // Dashboard Functions
-        function loadDashboardData() {
-            showLoader();
+        // Load dashboard data
+        function loadDashboard() {
+            // Total students
+            document.getElementById('total-students').textContent = students.length;
             
-            // Load students
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .get()
-                .then(studentsSnapshot => {
-                    const students = [];
-                    let totalStudents = 0;
-                    let totalDueAmount = 0;
-                    let todayAdmissions = 0;
-                    const classCount = {};
-                    
-                    studentsSnapshot.forEach(doc => {
-                        const student = {
-                            id: doc.id,
-                            ...doc.data()
-                        };
-                        students.push(student);
-                        totalStudents++;
-                        
-                        // Calculate total due
-                        if (student.totalDue) {
-                            totalDueAmount += student.totalDue;
-                        }
-                        
-                        // Check if admitted today
-                        if (student.admissionDate === new Date().toISOString().split('T')[0]) {
-                            todayAdmissions++;
-                        }
-                        
-                        // Count by class
-                        if (classCount[student.class]) {
-                            classCount[student.class]++;
-                        } else {
-                            classCount[student.class] = 1;
-                        }
-                    });
-                    
-                    // Load payments
-                    return db.collection('payments')
-                        .where('userId', '==', currentUser.uid)
-                        .get()
-                        .then(paymentsSnapshot => {
-                            const payments = [];
-                            let totalFeeCollected = 0;
-                            let todayPaymentsCount = 0;
-                            let todayCollection = 0;
-                            let totalExamFeeCollected = 0;
-                            let todayExamFee = 0;
-                            const dailyCollection = {};
-                            
-                            paymentsSnapshot.forEach(doc => {
-                                const payment = {
-                                    id: doc.id,
-                                    ...doc.data()
-                                };
-                                payments.push(payment);
-                                
-                                totalFeeCollected += payment.paidAmount || 0;
-                                totalExamFeeCollected += payment.examFeeAmount || 0;
-                                
-                                // Check if payment is from today
-                                if (payment.paymentDate === new Date().toISOString().split('T')[0]) {
-                                    todayPaymentsCount++;
-                                    todayCollection += payment.totalAmount || 0;
-                                    todayExamFee += payment.examFeeAmount || 0;
-                                }
-                                
-                                // Group by date for chart
-                                if (dailyCollection[payment.paymentDate]) {
-                                    dailyCollection[payment.paymentDate] += payment.totalAmount || 0;
-                                } else {
-                                    dailyCollection[payment.paymentDate] = payment.totalAmount || 0;
-                                }
-                            });
-                            
-                            // Update dashboard UI
-                            document.getElementById('total-students').textContent = totalStudents;
-                            document.getElementById('total-fee-collected').textContent = totalFeeCollected + '৳';
-                            document.getElementById('total-due-amount').textContent = totalDueAmount + '৳';
-                            document.getElementById('today-admissions').textContent = todayAdmissions;
-                            document.getElementById('today-payments-count').textContent = todayPaymentsCount;
-                            document.getElementById('today-collection').textContent = todayCollection + '৳';
-                            document.getElementById('total-exam-fee-collected').textContent = totalExamFeeCollected + '৳';
-                            document.getElementById('today-exam-fee').textContent = todayExamFee + '৳';
-                            
-                            // Create charts
-                            createClassChart(classCount);
-                            createFeeChart(dailyCollection);
-                            
-                            hideLoader();
-                        });
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
+            // Total fee collected
+            const totalFeeCollected = students.reduce((sum, student) => sum + (student.totalPaid || 0), 0);
+            document.getElementById('total-fee-collected').textContent = `${totalFeeCollected}৳`;
+            
+            // Total due amount
+            const totalDueAmount = students.reduce((sum, student) => {
+                const dueMonths = student.dueMonths || 0;
+                return sum + (dueMonths * student.monthlyFee);
+            }, 0);
+            document.getElementById('total-due-amount').textContent = `${totalDueAmount}৳`;
+            
+            // Today's admissions
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayAdmissions = students.filter(student => {
+                const admissionDate = new Date(student.admissionDate);
+                return admissionDate >= today;
+            }).length;
+            document.getElementById('today-admissions').textContent = todayAdmissions;
+            
+            // Today's payments count and collection
+            const todayPayments = payments.filter(payment => {
+                const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+                return paymentDate.toDateString() === today.toDateString();
+            });
+            
+            document.getElementById('today-payments-count').textContent = todayPayments.length;
+            
+            const todayCollection = todayPayments.reduce((sum, payment) => sum + payment.totalAmount, 0);
+            document.getElementById('today-collection').textContent = `${todayCollection}৳`;
+            
+            // Total exam fee collected
+            const totalExamFeeCollected = payments.reduce((sum, payment) => sum + (payment.examFeeAmount || 0), 0);
+            document.getElementById('total-exam-fee-collected').textContent = `${totalExamFeeCollected}৳`;
+            
+            // Today's exam fee
+            const todayExamFee = todayPayments.reduce((sum, payment) => sum + (payment.examFeeAmount || 0), 0);
+            document.getElementById('today-exam-fee').textContent = `${todayExamFee}৳`;
+            
+            // Create class distribution chart
+            createClassChart();
+            
+            // Create fee collection chart
+            createFeeChart();
         }
 
-        function createClassChart(classCount) {
+        // Create class distribution chart
+        function createClassChart() {
             const ctx = document.getElementById('class-chart').getContext('2d');
             
             // Destroy existing chart if it exists
-            if (window.classChart) {
-                window.classChart.destroy();
+            if (classChart) {
+                classChart.destroy();
             }
             
-            const labels = Object.keys(classCount);
-            const data = Object.values(classCount);
-            const colors = ['#2c786c', '#004445', '#f8b400', '#ff7e5f', '#76528b'];
+            const classes = ['শিশু জামাত', 'প্রথম জামাত', 'দ্বিতীয় জামাত', 'তৃতীয় জামাত', 'হিফজ বিভাগ'];
+            const classCounts = classes.map(className => {
+                return students.filter(student => student.class === className).length;
+            });
             
-            window.classChart = new Chart(ctx, {
+            classChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: labels,
+                    labels: classes,
                     datasets: [{
-                        data: data,
-                        backgroundColor: colors,
-                        borderWidth: 1
+                        data: classCounts,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF'
+                        ]
                     }]
                 },
                 options: {
@@ -1919,31 +1866,45 @@
             });
         }
 
-        function createFeeChart(dailyCollection) {
+        // Create fee collection chart
+        function createFeeChart() {
             const ctx = document.getElementById('fee-chart').getContext('2d');
             
             // Destroy existing chart if it exists
-            if (window.feeChart) {
-                window.feeChart.destroy();
+            if (feeChart) {
+                feeChart.destroy();
             }
             
-            // Sort dates and get last 7 days
-            const sortedDates = Object.keys(dailyCollection).sort();
-            const recentDates = sortedDates.slice(-7);
-            const recentData = recentDates.map(date => dailyCollection[date]);
+            // Get last 7 days of payment data
+            const last7Days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                last7Days.push(date.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' }));
+            }
             
-            window.feeChart = new Chart(ctx, {
+            const dailyCollections = last7Days.map(day => {
+                const dayPayments = payments.filter(payment => {
+                    if (!payment.timestamp) return false;
+                    const paymentDate = payment.timestamp.toDate();
+                    const paymentDay = paymentDate.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
+                    return paymentDay === day;
+                });
+                
+                return dayPayments.reduce((sum, payment) => sum + payment.totalAmount, 0);
+            });
+            
+            feeChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: recentDates.map(date => formatDate(date)),
+                    labels: last7Days,
                     datasets: [{
                         label: 'বেতন আদায় (৳)',
-                        data: recentData,
+                        data: dailyCollections,
                         borderColor: '#2c786c',
                         backgroundColor: 'rgba(44, 120, 108, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.3
+                        tension: 0.3,
+                        fill: true
                     }]
                 },
                 options: {
@@ -1957,264 +1918,173 @@
             });
         }
 
-        // Fee Settings Functions
-        function loadFeeSettings() {
-            db.collection('feeSettings')
-                .doc(currentUser.uid)
-                .get()
-                .then(doc => {
-                    if (doc.exists) {
-                        classFeeSettings = doc.data();
-                        
-                        // Update form fields
-                        document.getElementById('baby-class-fee').value = classFeeSettings['শিশু জামাত'] || '';
-                        document.getElementById('first-class-fee').value = classFeeSettings['প্রথম জামাত'] || '';
-                        document.getElementById('second-class-fee').value = classFeeSettings['দ্বিতীয় জামাত'] || '';
-                        document.getElementById('third-class-fee').value = classFeeSettings['তৃতীয় জামাত'] || '';
-                        document.getElementById('hifz-class-fee').value = classFeeSettings['হিফজ বিভাগ'] || '';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading fee settings:', error);
-                });
-        }
-
-        function saveFeeSettings(e) {
-            e.preventDefault();
-            showLoader();
-            
-            const feeSettings = {
-                'শিশু জামাত': parseInt(document.getElementById('baby-class-fee').value) || 0,
-                'প্রথম জামাত': parseInt(document.getElementById('first-class-fee').value) || 0,
-                'দ্বিতীয় জামাত': parseInt(document.getElementById('second-class-fee').value) || 0,
-                'তৃতীয় জামাত': parseInt(document.getElementById('third-class-fee').value) || 0,
-                'হিফজ বিভাগ': parseInt(document.getElementById('hifz-class-fee').value) || 0,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        // Download backup
+        function downloadBackup() {
+            const backupData = {
+                students: students,
+                payments: payments,
+                backupDate: new Date().toISOString()
             };
             
-            db.collection('feeSettings')
-                .doc(currentUser.uid)
-                .set(feeSettings)
-                .then(() => {
-                    classFeeSettings = feeSettings;
-                    hideLoader();
-                    showToast('বেতন সেটিংস সফলভাবে সেভ হয়েছে!', 'success');
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
-        }
-
-        // Backup and Restore Functions
-        function downloadBackup() {
-            showLoader();
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
             
-            // Get all data
-            Promise.all([
-                db.collection('students').where('userId', '==', currentUser.uid).get(),
-                db.collection('payments').where('userId', '==', currentUser.uid).get(),
-                db.collection('feeSettings').doc(currentUser.uid).get()
-            ])
-            .then(([studentsSnapshot, paymentsSnapshot, feeSettingsDoc]) => {
-                const backupData = {
-                    students: [],
-                    payments: [],
-                    feeSettings: feeSettingsDoc.exists ? feeSettingsDoc.data() : {},
-                    backupDate: new Date().toISOString()
-                };
-                
-                studentsSnapshot.forEach(doc => {
-                    backupData.students.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                
-                paymentsSnapshot.forEach(doc => {
-                    backupData.payments.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                
-                // Create and download file
-                const dataStr = JSON.stringify(backupData, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `madrasa-backup-${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                
-                URL.revokeObjectURL(url);
-                hideLoader();
-                showToast('ব্যাকআপ সফলভাবে ডাউনলোড হয়েছে!', 'success');
-            })
-            .catch(error => {
-                hideLoader();
-                showToast('ত্রুটি: ' + error.message, 'error');
-            });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `madrasa-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('ব্যাকআপ সফলভাবে ডাউনলোড হয়েছে!', 'success');
         }
 
+        // Restore backup
         function restoreBackup() {
-            const fileInput = document.getElementById('restore-file');
+            const fileInput = document.getElementById('backup-file');
             const file = fileInput.files[0];
             
             if (!file) {
-                showToast('ফাইল নির্বাচন করুন!', 'error');
+                showToast('দয়া করে একটি ব্যাকআপ ফাইল নির্বাচন করুন!', 'error');
                 return;
             }
-            
-            if (!confirm('আপনি কি নিশ্চিত? এটি আপনার বর্তমান ডেটা প্রতিস্থাপন করবে!')) {
-                return;
-            }
-            
-            showLoader();
             
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const backupData = JSON.parse(e.target.result);
                     
-                    // Restore students
-                    const studentPromises = backupData.students.map(student => {
-                        const studentData = {...student};
-                        delete studentData.id; // Remove ID for new document
-                        return db.collection('students').add(studentData);
+                    if (!backupData.students || !backupData.payments) {
+                        showToast('ভুল ব্যাকআপ ফাইল ফরম্যাট!', 'error');
+                        return;
+                    }
+                    
+                    if (!confirm('আপনি কি নিশ্চিত যে আপনি এই ব্যাকআপ থেকে ডেটা রিস্টোর করতে চান? বর্তমান ডেটা মুছে যাবে!')) {
+                        return;
+                    }
+                    
+                    showLoader();
+                    
+                    // Delete all existing data first
+                    const batch = db.batch();
+                    
+                    // Delete all students
+                    students.forEach(student => {
+                        const studentRef = db.collection('students').doc(student.id);
+                        batch.delete(studentRef);
                     });
                     
-                    // Restore payments
-                    const paymentPromises = backupData.payments.map(payment => {
-                        const paymentData = {...payment};
-                        delete paymentData.id; // Remove ID for new document
-                        return db.collection('payments').add(paymentData);
+                    // Delete all payments
+                    payments.forEach(payment => {
+                        const paymentRef = db.collection('payments').doc(payment.id);
+                        batch.delete(paymentRef);
                     });
                     
-                    // Restore fee settings
-                    const feeSettingsPromise = db.collection('feeSettings')
-                        .doc(currentUser.uid)
-                        .set(backupData.feeSettings || {});
-                    
-                    // Execute all promises
-                    Promise.all([
-                        ...studentPromises,
-                        ...paymentPromises,
-                        feeSettingsPromise
-                    ])
-                    .then(() => {
-                        hideLoader();
-                        showToast('ডেটা সফলভাবে রিস্টোর হয়েছে!', 'success');
-                        fileInput.value = '';
-                        loadDashboardData();
-                    })
-                    .catch(error => {
-                        hideLoader();
-                        showToast('ত্রুটি: ' + error.message, 'error');
-                    });
-                    
+                    batch.commit()
+                        .then(() => {
+                            // Add backup data
+                            const restoreBatch = db.batch();
+                            
+                            // Restore students
+                            backupData.students.forEach(student => {
+                                const studentRef = db.collection('students').doc();
+                                const studentData = { ...student };
+                                delete studentData.id; // Remove the old ID
+                                studentData.userId = currentUser.uid; // Set current user ID
+                                restoreBatch.set(studentRef, studentData);
+                            });
+                            
+                            // Restore payments
+                            backupData.payments.forEach(payment => {
+                                const paymentRef = db.collection('payments').doc();
+                                const paymentData = { ...payment };
+                                delete paymentData.id; // Remove the old ID
+                                paymentData.userId = currentUser.uid; // Set current user ID
+                                restoreBatch.set(paymentRef, paymentData);
+                            });
+                            
+                            return restoreBatch.commit();
+                        })
+                        .then(() => {
+                            hideLoader();
+                            showToast('ডেটা সফলভাবে রিস্টোর হয়েছে!', 'success');
+                            fileInput.value = '';
+                            loadAllData();
+                        })
+                        .catch((error) => {
+                            hideLoader();
+                            console.error('Error restoring backup:', error);
+                            showToast('ডেটা রিস্টোর করতে সমস্যা হয়েছে!', 'error');
+                        });
                 } catch (error) {
-                    hideLoader();
-                    showToast('ত্রুটি: ফাইল ফরম্যাট সঠিক নয়!', 'error');
+                    console.error('Error parsing backup file:', error);
+                    showToast('ব্যাকআপ ফাইল পড়তে সমস্যা হয়েছে!', 'error');
                 }
             };
             
             reader.readAsText(file);
         }
 
-        function resetData() {
-            if (!confirm('আপনি কি নিশ্চিত? এটি সমস্ত ডেটা মুছে ফেলবে! এটি পূর্বাবস্থায় ফিরিয়ে আনা যাবে না!')) {
-                return;
-            }
+        // Save settings
+        function saveSettings() {
+            const autoBackup = document.getElementById('auto-backup').checked;
+            const notifications = document.getElementById('notifications').checked;
             
-            showLoader();
+            localStorage.setItem('autoBackup', autoBackup);
+            localStorage.setItem('notifications', notifications);
             
-            // Delete all students
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .get()
-                .then(querySnapshot => {
-                    const deletePromises = [];
-                    querySnapshot.forEach(doc => {
-                        deletePromises.push(doc.ref.delete());
-                    });
-                    return Promise.all(deletePromises);
-                })
-                .then(() => {
-                    // Delete all payments
-                    return db.collection('payments')
-                        .where('userId', '==', currentUser.uid)
-                        .get()
-                        .then(querySnapshot => {
-                            const deletePromises = [];
-                            querySnapshot.forEach(doc => {
-                                deletePromises.push(doc.ref.delete());
-                            });
-                            return Promise.all(deletePromises);
-                        });
-                })
-                .then(() => {
-                    // Delete fee settings
-                    return db.collection('feeSettings').doc(currentUser.uid).delete();
-                })
-                .then(() => {
-                    hideLoader();
-                    showToast('সমস্ত ডেটা সফলভাবে রিসেট হয়েছে!', 'success');
-                    loadDashboardData();
-                })
-                .catch(error => {
-                    hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
-                });
+            showToast('সেটিংস সংরক্ষণ হয়েছে!', 'success');
         }
 
-        // Smart Search Functionality
-        function handleSmartSearch() {
-            const searchTerm = document.getElementById('student-search-input').value.trim();
-            const resultsContainer = document.getElementById('search-results');
+        // Load settings
+        function loadSettings() {
+            const autoBackup = localStorage.getItem('autoBackup') === 'true';
+            const notifications = localStorage.getItem('notifications') === 'true';
+            
+            document.getElementById('auto-backup').checked = autoBackup;
+            document.getElementById('notifications').checked = notifications;
+        }
+
+        // Student search functionality
+        document.getElementById('student-search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            if (!currentClass) return;
+            
+            const classStudents = students.filter(student => student.class === currentClass);
+            const filteredStudents = classStudents.filter(student => 
+                student.name.toLowerCase().includes(searchTerm) ||
+                student.fatherName.toLowerCase().includes(searchTerm) ||
+                student.mobile.includes(searchTerm)
+            );
+            
+            displayStudents(filteredStudents);
+        });
+
+        // Smart search for fee payment
+        document.getElementById('student-search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const searchResults = document.getElementById('search-results');
             
             if (searchTerm.length < 2) {
-                resultsContainer.style.display = 'none';
+                searchResults.style.display = 'none';
                 return;
             }
             
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .get()
-                .then(querySnapshot => {
-                    const students = [];
-                    querySnapshot.forEach(doc => {
-                        const student = {
-                            id: doc.id,
-                            ...doc.data()
-                        };
-                        students.push(student);
-                    });
-                    
-                    // Filter students based on search term
-                    const filteredStudents = students.filter(student => 
-                        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        student.mobile.includes(searchTerm)
-                    );
-                    
-                    // Display results
-                    displaySearchResults(filteredStudents, resultsContainer);
-                })
-                .catch(error => {
-                    console.error('Error searching students:', error);
-                });
-        }
-
-        function displaySearchResults(students, container) {
-            container.innerHTML = '';
+            const filteredStudents = students.filter(student => 
+                student.name.toLowerCase().includes(searchTerm) ||
+                student.fatherName.toLowerCase().includes(searchTerm) ||
+                student.mobile.includes(searchTerm)
+            );
             
-            if (students.length === 0) {
-                container.style.display = 'none';
+            if (filteredStudents.length === 0) {
+                searchResults.style.display = 'none';
                 return;
             }
             
-            students.forEach(student => {
+            searchResults.innerHTML = '';
+            filteredStudents.forEach(student => {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'search-result-item';
                 resultItem.innerHTML = `
@@ -2223,121 +2093,108 @@
                             <div class="student-name">${student.name}</div>
                             <div class="student-father">${student.fatherName} - ${student.class}</div>
                         </div>
-                        <div class="mobile-number">${student.mobile}</div>
+                        <div class="student-mobile">${student.mobile}</div>
                     </div>
                 `;
-                
                 resultItem.addEventListener('click', () => {
                     document.getElementById('fee-class').value = student.class;
-                    loadStudentsForFeePayment();
-                    
-                    // Wait for students to load then select the student
-                    setTimeout(() => {
-                        document.getElementById('fee-student').value = student.id;
-                        loadStudentFeeInfo();
-                        container.style.display = 'none';
-                        document.getElementById('student-search-input').value = '';
-                    }, 500);
+                    document.getElementById('fee-student').value = student.id;
+                    document.getElementById('monthly-fee').value = student.monthlyFee;
+                    const dueMonths = student.dueMonths || 0;
+                    document.getElementById('due-amount').value = dueMonths * student.monthlyFee;
+                    searchResults.style.display = 'none';
+                    document.getElementById('student-search-input').value = '';
                 });
-                
-                container.appendChild(resultItem);
+                searchResults.appendChild(resultItem);
             });
             
-            container.style.display = 'block';
-        }
+            searchResults.style.display = 'block';
+        });
 
-        // Utility Functions
-        function updateCurrentTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            currentTime.textContent = now.toLocaleDateString('bn-BD', options);
-        }
+        // Hide search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('search-results').style.display = 'none';
+            }
+        });
 
-        function showLoader() {
-            loader.style.display = 'flex';
-        }
-
-        function hideLoader() {
-            loader.style.display = 'none';
-        }
-
-        function showToast(message, type = 'info') {
-            toastMessage.textContent = message;
+        // Auto due month addition at the end of each month
+        function startAutoDueMonthAddition() {
+            // Check if we've already added due months this month
+            const lastDueMonthAddition = localStorage.getItem('lastDueMonthAddition');
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
             
-            // Set background color based on type
-            if (type === 'success') {
-                toast.style.backgroundColor = '#2ecc71';
-            } else if (type === 'error') {
-                toast.style.backgroundColor = '#e74c3c';
-            } else {
-                toast.style.backgroundColor = '#3498db';
+            // If we haven't added due months this month, check if it's the last day of the month
+            if (!lastDueMonthAddition || 
+                (parseInt(lastDueMonthAddition.split('-')[0]) !== currentMonth ||
+                 parseInt(lastDueMonthAddition.split('-')[1]) !== currentYear)) {
+                
+                // Check if today is the last day of the month
+                const today = new Date();
+                const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                if (today.getDate() === lastDayOfMonth.getDate()) {
+                    addDueMonthToAllStudents();
+                    localStorage.setItem('lastDueMonthAddition', `${currentMonth}-${currentYear}`);
+                }
             }
             
-            bootstrapToast.show();
+            // Check every day if it's the last day of the month
+            setInterval(() => {
+                const today = new Date();
+                const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                
+                const lastDueMonthAddition = localStorage.getItem('lastDueMonthAddition');
+                
+                if (today.getDate() === lastDayOfMonth.getDate() && 
+                    (!lastDueMonthAddition || 
+                     (parseInt(lastDueMonthAddition.split('-')[0]) !== currentMonth ||
+                      parseInt(lastDueMonthAddition.split('-')[1]) !== currentYear))) {
+                    
+                    addDueMonthToAllStudents();
+                    localStorage.setItem('lastDueMonthAddition', `${currentMonth}-${currentYear}`);
+                }
+            }, 24 * 60 * 60 * 1000); // Check once per day
         }
 
-        function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('bn-BD', options);
-        }
-
-        function getExamFeeStatus(student) {
-            const exams = [];
-            if (student.firstExam) exams.push('১ম');
-            if (student.secondExam) exams.push('২য়');
-            if (student.thirdExam) exams.push('৩য়');
-            
-            return exams.length > 0 ? exams.join(', ') : 'কোনোটিই নয়';
-        }
-
-        function downloadClassReport(className) {
+        // Add due month to all students
+        function addDueMonthToAllStudents() {
             showLoader();
             
-            db.collection('students')
-                .where('userId', '==', currentUser.uid)
-                .where('class', '==', className)
-                .get()
-                .then(querySnapshot => {
-                    const students = [];
-                    querySnapshot.forEach(doc => {
-                        students.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    
-                    // Create CSV content
-                    let csvContent = 'নাম,পিতার নাম,মোবাইল,মাসিক বেতন,জমা মাস,বাকি মাস,মোট জমা,মোট বাকি\n';
-                    
-                    students.forEach(student => {
-                        csvContent += `"${student.name}","${student.fatherName}","${student.mobile}",${student.monthlyFee},${student.paidMonths || 0},${student.dueMonths || 0},${student.totalPaid || 0},${student.totalDue || 0}\n`;
-                    });
-                    
-                    // Create and download file
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `${className}-রিপোর্ট-${new Date().toISOString().split('T')[0]}.csv`;
-                    link.click();
-                    
-                    URL.revokeObjectURL(url);
+            const batch = db.batch();
+            
+            students.forEach(student => {
+                const studentRef = db.collection('students').doc(student.id);
+                const updatedDueMonths = (student.dueMonths || 0) + 1;
+                const updatedTotalDue = (student.totalDue || 0) + student.monthlyFee;
+                
+                batch.update(studentRef, {
+                    dueMonths: updatedDueMonths,
+                    totalDue: updatedTotalDue,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+            
+            batch.commit()
+                .then(() => {
                     hideLoader();
-                    showToast('রিপোর্ট ডাউনলোড হয়েছে!', 'success');
+                    showToast('সকল ছাত্রের বকেয়া মাস স্বয়ংক্রিয়ভাবে যোগ হয়েছে!', 'success');
+                    loadAllData();
                 })
-                .catch(error => {
+                .catch((error) => {
                     hideLoader();
-                    showToast('ত্রুটি: ' + error.message, 'error');
+                    console.error('Error adding due months:', error);
+                    showToast('বকেয়া মাস যোগ করতে সমস্যা হয়েছে!', 'error');
                 });
         }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
     </script>
 </body>
 </html>
