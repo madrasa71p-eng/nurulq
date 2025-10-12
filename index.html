@@ -806,24 +806,42 @@
             </div>
         </div>
 
-        <!-- Today's Payments Page -->
-        <div id="today-payments-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
-            <h4>আজকের বেতনদাতা</h4>
-            <p id="today-date"></p>
-            
-            <div class="table-responsive">
-                <table class="student-table">
-                    <thead>
-                        <tr>
-                            <th>নাম</th>
-                            <th>জামাত</th>
-                            <th>টাকা</th>
-                            <th>কত মাসের</th>
-                            <th>সময়</th>
-                        </tr>
-                    </thead>
-                    <tbody id="today-payments-body">
+       <!-- Today's Payments Page -->
+<div id="today-payments-page" class="page">
+    <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
+    <h4>আজকের বেতনদাতা</h4>
+    <p id="today-date"></p>
+    
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <span class="badge bg-primary">মোট আদায়: <span id="today-total-amount">0</span>৳</span>
+            <span class="badge bg-success ms-2">মোট ছাত্র: <span id="today-total-students">0</span> জন</span>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="clearTodayPayments()">
+            <i class="fas fa-trash"></i> আজকের ডেটা ডিলিট
+        </button>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>ক্রমিক</th>
+                    <th>নাম</th>
+                    <th>জামাত</th>
+                    <th>টাকা</th>
+                    <th>কয় মাস</th>
+                    <th>সময়</th>
+                    <th>পদ্ধতি</th>
+                    <th>অ্যাকশন</th>
+                </tr>
+            </thead>
+            <tbody id="today-payments-body">
+                <!-- Today's payments will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+</div>
                         <!-- Today's payments will be loaded here -->
                     </tbody>
                 </table>
@@ -2121,6 +2139,138 @@
                     showToast('ডেটা মুছতে সমস্যা: ' + error.message, 'error');
                 });
         }
-    </script>
+   
+   
+   
+   // Load today's payments
+function loadTodayPayments() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(today);
+    todayEnd.setHours(23, 59, 59, 999);
+    
+    const todayPayments = payments.filter(payment => {
+        const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+        return paymentDate >= today && paymentDate <= todayEnd;
+    });
+    
+    // Sort by timestamp descending (latest first)
+    todayPayments.sort((a, b) => {
+        const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+        const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+        return dateB - dateA;
+    });
+    
+    document.getElementById('today-date').textContent = `তারিখ: ${today.toLocaleDateString('bn-BD')}`;
+    
+    const todayPaymentsBody = document.getElementById('today-payments-body');
+    todayPaymentsBody.innerHTML = '';
+    
+    // Update summary
+    const totalAmount = todayPayments.reduce((sum, payment) => sum + payment.totalAmount, 0);
+    const uniqueStudents = [...new Set(todayPayments.map(payment => payment.studentId))].length;
+    
+    document.getElementById('today-total-amount').textContent = totalAmount;
+    document.getElementById('today-total-students').textContent = uniqueStudents;
+    
+    if (todayPayments.length === 0) {
+        todayPaymentsBody.innerHTML = '<tr><td colspan="8" class="text-center">আজকে কোনো বেতন জমা হয়নি</td></tr>';
+        return;
+    }
+    
+    todayPayments.forEach((payment, index) => {
+        const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+        const timeString = paymentDate.toLocaleTimeString('bn-BD', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="serial-number">${index + 1}</td>
+            <td>${payment.studentName}</td>
+            <td>${payment.studentClass}</td>
+            <td>${payment.totalAmount}৳</td>
+            <td>${payment.paidMonths} মাস</td>
+            <td>${timeString}</td>
+            <td>${payment.paymentMethod}</td>
+            <td>
+                <button class="btn btn-sm btn-danger action-btn" onclick="deleteSinglePayment('${payment.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        todayPaymentsBody.appendChild(row);
+    });
+}
+
+// Delete single payment
+function deleteSinglePayment(paymentId) {
+    if (!confirm('আপনি কি নিশ্চিত যে আপনি এই পেমেন্ট রেকর্ডটি মুছে ফেলতে চান?')) {
+        return;
+    }
+    
+    showLoader();
+    db.collection('payments').doc(paymentId).delete()
+        .then(() => {
+            hideLoader();
+            showToast('পেমেন্ট রেকর্ড সফলভাবে মুছে ফেলা হয়েছে!', 'success');
+            loadPayments().then(() => {
+                loadTodayPayments();
+            });
+        })
+        .catch((error) => {
+            hideLoader();
+            console.error('Error deleting payment:', error);
+            showToast('পেমেন্ট রেকর্ড মুছতে সমস্যা হয়েছে!', 'error');
+        });
+}
+
+// Clear all today's payments
+function clearTodayPayments() {
+    if (!confirm('আপনি কি নিশ্চিত যে আপনি আজকের সকল পেমেন্ট রেকর্ড মুছে ফেলতে চান? এটি পূর্বের পেমেন্ট রেকর্ডগুলোকেও প্রভাবিত করতে পারে!')) {
+        return;
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(today);
+    todayEnd.setHours(23, 59, 59, 999);
+    
+    const todayPayments = payments.filter(payment => {
+        const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+        return paymentDate >= today && paymentDate <= todayEnd;
+    });
+    
+    if (todayPayments.length === 0) {
+        showToast('আজকের কোনো পেমেন্ট রেকর্ড নেই!', 'info');
+        return;
+    }
+    
+    showLoader();
+    
+    const batch = db.batch();
+    todayPayments.forEach(payment => {
+        const paymentRef = db.collection('payments').doc(payment.id);
+        batch.delete(paymentRef);
+    });
+    
+    batch.commit()
+        .then(() => {
+            hideLoader();
+            showToast('আজকের সকল পেমেন্ট রেকর্ড সফলভাবে মুছে ফেলা হয়েছে!', 'success');
+            loadPayments().then(() => {
+                loadTodayPayments();
+            });
+        })
+        .catch((error) => {
+            hideLoader();
+            console.error('Error clearing today payments:', error);
+            showToast('পেমেন্ট রেকর্ড মুছতে সমস্যা হয়েছে!', 'error');
+        });
+}
+   
+   </script>
 </body>
 </html>
+
