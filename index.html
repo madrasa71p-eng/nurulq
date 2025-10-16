@@ -11,7 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    
+    <!-- Head section-এ অ্যাড করুন -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
     <style>
         :root {
             --primary-color: #2c786c;
@@ -469,6 +470,82 @@
             font-weight: 600;
             color: var(--secondary-color);
         }
+
+
+
+
+            /* Smart Search Styles */
+.search-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.search-result-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-result-item:hover {
+    background-color: #f5f5f5;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.student-option {
+    display: flex;
+    justify-content: space-between;
+}
+
+.student-name {
+    font-weight: 500;
+}
+
+.student-father {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Fuzzy Search Styles */
+.match-quality {
+    font-size: 0.7em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background-color: #e9ecef;
+    margin-top: 2px;
+    display: inline-block;
+}
+
+.exact-match {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.fuzzy-match {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+
+
+
     </style>
 </head>
 <body>
@@ -1085,7 +1162,24 @@
             // Setup event listeners
             setupEventListeners();
         });
-
+        function setupEventListeners() {
+    // ... existing code ...
+    
+    // Class selection for fee payment - Clear search when class changes
+    document.getElementById('fee-class').addEventListener('change', function() {
+        loadStudentsForFeePayment(this.value);
+        // Clear search input and results when class changes
+        document.getElementById('student-search-input').value = '';
+        document.getElementById('search-results').style.display = 'none';
+    });
+    
+    // Student search for fee payment - Use advanced search
+    document.getElementById('student-search-input').addEventListener('input', function() {
+        searchStudentsForFeePayment(this.value);
+    });
+    
+    // ... existing code ...
+}
         // Update current time
         function updateCurrentTime() {
             const now = new Date();
@@ -2430,6 +2524,108 @@
                     showToast('পেমেন্ট রেকর্ড মুছতে সমস্যা হয়েছে!', 'error');
                 });
         }
+
+
+
+
+
+
+
+
+// Advanced Search Functions
+function searchStudentsForFeePayment(searchTerm) {
+    const searchResults = document.getElementById('search-results');
+    searchResults.innerHTML = '';
+    
+    if (!searchTerm) {
+        searchResults.style.display = 'none';
+        return;
+    }
+    
+    // Get selected class
+    const selectedClass = document.getElementById('fee-class').value;
+    
+    // Filter students by selected class first
+    let filteredStudents = students;
+    if (selectedClass) {
+        filteredStudents = students.filter(student => student.class === selectedClass);
+    }
+    
+    // Now apply search filter
+    filteredStudents = searchStudents(searchTerm, filteredStudents);
+    
+    if (filteredStudents.length === 0) {
+        const noResult = document.createElement('div');
+        noResult.className = 'search-result-item';
+        noResult.textContent = 'কোনো ছাত্র পাওয়া যায়নি';
+        searchResults.appendChild(noResult);
+        searchResults.style.display = 'block';
+        return;
+    }
+    
+    filteredStudents.forEach(student => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'search-result-item';
+        resultItem.innerHTML = `
+            <div class="student-option">
+                <div>
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-father">${student.fatherName} - ${student.class}</div>
+                </div>
+                <div>${student.mobile}</div>
+            </div>
+        `;
+        
+        resultItem.addEventListener('click', () => {
+            document.getElementById('fee-class').value = student.class;
+            loadStudentsForFeePayment(student.class);
+            document.getElementById('fee-student').value = student.id;
+            loadStudentFeeInfo(student.id);
+            document.getElementById('student-search-input').value = '';
+            searchResults.style.display = 'none';
+        });
+        
+        searchResults.appendChild(resultItem);
+    });
+    
+    searchResults.style.display = 'block';
+}
+
+function searchStudents(query, studentList = students) {
+    if (!query) return studentList;
+    
+    const options = {
+        includeScore: true,
+        threshold: 0.4,
+        keys: ['name', 'fatherName', 'mobile', 'class']
+    };
+    
+    const fuse = new Fuse(studentList, options);
+    const result = fuse.search(query);
+    
+    return result.map(item => item.item);
+}
+
+// Alternative simple search function (if you prefer)
+function simpleSearchStudents(query, studentList = students) {
+    if (!query.trim()) return studentList;
+    
+    const searchTerms = query.toLowerCase().split(' ');
+    
+    return studentList.filter(student => {
+        const searchText = `
+            ${student.name} 
+            ${student.fatherName} 
+            ${student.mobile} 
+            ${student.class}
+        `.toLowerCase();
+        
+        return searchTerms.every(term => searchText.includes(term));
+    });
+}
+
+
+
    
    </script>
 </body>
