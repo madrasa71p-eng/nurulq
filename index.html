@@ -1017,20 +1017,12 @@
             </div>
             
             <div class="dashboard-card">
-                <h5><i class="fas fa-calendar-alt"></i> মাসিক কালেকশন (জামাত অনুযায়ী)</h5>
-                <p class="text-muted" style="font-size: 0.9rem;">বর্তমান মাস: <span id="current-month-display"></span> | পরবর্তী রিসেট: <span id="next-reset-date"></span></p>
-                <div id="monthly-collection-by-class">
-                    <!-- Monthly collections will be loaded here -->
-                </div>
-            </div>
-            
-            <div class="dashboard-card">
-                <h5><i class="fas fa-chart-pie"></i> ক্লাস অনুযায়ী ছাত্র সংখ্যা</h5>
+                <h5><i class="fas fa-chart-pie"></i> ক্লাস অনুযায়ী ছাত্র সংখ্যা</h5>
                 <canvas id="class-chart" height="200"></canvas>
             </div>
             
             <div class="dashboard-card">
-                <h5><i class="fas fa-chart-line"></i> সাম্প্রতিক বেতন আদায়</h5>
+                <h5><i class="fas fa-chart-line"></i> সাম্প্রতিক বেতন আদায়</h5>
                 <canvas id="payment-chart" height="200"></canvas>
             </div>
         </div>
@@ -1435,14 +1427,6 @@
         function loadStudentsByClass(className) {
             showLoader();
             const filteredStudents = students.filter(student => student.class === className);
-            
-            // Sort by admission date (oldest first)
-            filteredStudents.sort((a, b) => {
-                const dateA = new Date(a.admissionDate || '9999-12-31');
-                const dateB = new Date(b.admissionDate || '9999-12-31');
-                return dateA - dateB;
-            });
-            
             displayStudents(filteredStudents);
             hideLoader();
         }
@@ -1499,14 +1483,6 @@
                 student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 student.mobile.includes(searchTerm))
             );
-            
-            // Sort by admission date (oldest first)
-            filteredStudents.sort((a, b) => {
-                const dateA = new Date(a.admissionDate || '9999-12-31');
-                const dateB = new Date(b.admissionDate || '9999-12-31');
-                return dateA - dateB;
-            });
-            
             displayStudents(filteredStudents);
         }
 
@@ -1949,13 +1925,6 @@
                 
                 if (unpaidStudents.length === 0) return;
                 
-                // Sort by admission date (oldest first)
-                unpaidStudents.sort((a, b) => {
-                    const dateA = new Date(a.admissionDate || '9999-12-31');
-                    const dateB = new Date(b.admissionDate || '9999-12-31');
-                    return dateA - dateB;
-                });
-                
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
                 
@@ -2066,13 +2035,6 @@
                     unpaidStudentsContainer.innerHTML = `<div class="alert alert-success text-center">${className} - সকল ছাত্রের বেতন পরিশোধিত হয়েছে!</div>`;
                     return;
                 }
-                
-                // Sort by admission date (oldest first)
-                unpaidStudents.sort((a, b) => {
-                    const dateA = new Date(a.admissionDate || '9999-12-31');
-                    const dateB = new Date(b.admissionDate || '9999-12-31');
-                    return dateA - dateB;
-                });
                 
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
@@ -2221,100 +2183,11 @@
             document.getElementById('total-exam-fee-collected').textContent = totalExamFeeCollected + '৳';
             document.getElementById('today-exam-fee').textContent = todayExamFee + '৳';
             
-            // Load monthly collection by class
-            loadMonthlyCollectionByClass();
-            
             // Create class distribution chart
             createClassChart();
             
             // Create payment trend chart
             createPaymentChart();
-        }
-
-        // Get current monthly period (from 10th to 10th)
-        function getCurrentMonthlyPeriod() {
-            const now = new Date();
-            const currentDay = now.getDate();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            
-            let periodStartDate, periodEndDate, displayMonth;
-            
-            if (currentDay >= 10) {
-                // Current period: 10th of this month to 9th of next month
-                periodStartDate = new Date(currentYear, currentMonth, 10, 0, 0, 0);
-                periodEndDate = new Date(currentYear, currentMonth + 1, 10, 0, 0, 0);
-                displayMonth = now.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
-            } else {
-                // Current period: 10th of last month to 9th of this month
-                periodStartDate = new Date(currentYear, currentMonth - 1, 10, 0, 0, 0);
-                periodEndDate = new Date(currentYear, currentMonth, 10, 0, 0, 0);
-                const lastMonth = new Date(currentYear, currentMonth - 1, 1);
-                displayMonth = lastMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
-            }
-            
-            return {
-                startDate: periodStartDate.toISOString().split('T')[0],
-                endDate: periodEndDate.toISOString().split('T')[0],
-                displayMonth: displayMonth,
-                nextResetDate: periodEndDate.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' })
-            };
-        }
-
-        // Calculate monthly collection by class
-        function loadMonthlyCollectionByClass() {
-            const period = getCurrentMonthlyPeriod();
-            
-            // Update display
-            document.getElementById('current-month-display').textContent = period.displayMonth;
-            document.getElementById('next-reset-date').textContent = period.nextResetDate;
-            
-            // Filter payments within the current period
-            const monthlyPayments = payments.filter(payment => {
-                return payment.paymentDate >= period.startDate && payment.paymentDate < period.endDate;
-            });
-            
-            // Group by class
-            const collectionByClass = {};
-            const classes = ['শিশু জামাত', 'প্রথম জামাত', 'দ্বিতীয় জামাত', 'তৃতীয় জামাত', 'হিফজ বিভাগ'];
-            
-            // Initialize all classes with 0
-            classes.forEach(className => {
-                collectionByClass[className] = 0;
-            });
-            
-            // Calculate collection for each class
-            monthlyPayments.forEach(payment => {
-                if (payment.studentClass && collectionByClass.hasOwnProperty(payment.studentClass)) {
-                    collectionByClass[payment.studentClass] += (payment.totalAmount || 0);
-                }
-            });
-            
-            // Display the results
-            const container = document.getElementById('monthly-collection-by-class');
-            let html = '';
-            let totalCollection = 0;
-            
-            classes.forEach(className => {
-                const amount = collectionByClass[className];
-                totalCollection += amount;
-                html += `
-                    <div class="monthly-class-item">
-                        <span class="monthly-class-name">${className}</span>
-                        <span class="monthly-class-amount">${amount.toLocaleString('bn-BD')}৳</span>
-                    </div>
-                `;
-            });
-            
-            // Add total
-            html += `
-                <div class="monthly-total">
-                    <span class="monthly-total-label">মোট কালেকশন</span>
-                    <span class="monthly-total-amount">${totalCollection.toLocaleString('bn-BD')}৳</span>
-                </div>
-            `;
-            
-            container.innerHTML = html;
         }
 
         function createClassChart() {
