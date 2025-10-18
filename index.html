@@ -734,16 +734,22 @@
                 </div>
                 
                 <div class="row mt-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="edit-paid-months">জমা মাস</label>
                             <input type="number" class="form-control" id="edit-paid-months" min="0">
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="edit-due-months">বাকি মাস</label>
                             <input type="number" class="form-control" id="edit-due-months" min="0">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="edit-advance-months">অগ্রিম মাস</label>
+                            <input type="number" class="form-control" id="edit-advance-months" min="0">
                         </div>
                     </div>
                 </div>
@@ -807,6 +813,7 @@
                             <th>মাসিক বেতন</th>
                             <th>জমা মাস</th>
                             <th>বাকি মাস</th>
+                            <th>অগ্রিম মাস</th>
                             <th>পরীক্ষার ফি</th>
                             <th>অ্যাকশন</th>
                         </tr>
@@ -1017,12 +1024,20 @@
             </div>
             
             <div class="dashboard-card">
-                <h5><i class="fas fa-chart-pie"></i> ক্লাস অনুযায়ী ছাত্র সংখ্যা</h5>
+                <h5><i class="fas fa-calendar-alt"></i> মাসিক কালেকশন (জামাত অনুযায়ী)</h5>
+                <p class="text-muted" style="font-size: 0.9rem;">বর্তমান মাস: <span id="current-month-display"></span> | পরবর্তী রিসেট: <span id="next-reset-date"></span></p>
+                <div id="monthly-collection-by-class">
+                    <!-- Monthly collections will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h5><i class="fas fa-chart-pie"></i> ক্লাস অনুযায়ী ছাত্র সংখ্যা</h5>
                 <canvas id="class-chart" height="200"></canvas>
             </div>
             
             <div class="dashboard-card">
-                <h5><i class="fas fa-chart-line"></i> সাম্প্রতিক বেতন আদায়</h5>
+                <h5><i class="fas fa-chart-line"></i> সাম্প্রতিক বেতন আদায়</h5>
                 <canvas id="payment-chart" height="200"></canvas>
             </div>
         </div>
@@ -1111,6 +1126,9 @@
         let todayPayments = [];
         let currentPage = "home-page";
         let currentPageTitle = "";
+        
+        // Auto-update interval (check dues every 5 minutes)
+        let autoUpdateInterval = null;
         
         // DOM elements
         const loginPage = document.getElementById('login-page');
@@ -1388,8 +1406,17 @@
                 loadStudents(),
                 loadPayments()
             ]).then(() => {
+                // Update all students' dues after loading
+                return updateAllStudentsDues();
+            }).then(() => {
                 hideLoader();
                 showToast('ডেটা সফলভাবে লোড হয়েছে!', 'success');
+                
+                // Start auto-update interval
+                if (autoUpdateInterval) clearInterval(autoUpdateInterval);
+                autoUpdateInterval = setInterval(() => {
+                    updateAllStudentsDues();
+                }, 5 * 60 * 1000); // Update every 5 minutes
             }).catch(error => {
                 hideLoader();
                 showToast('ডেটা লোড করতে সমস্যা: ' + error.message, 'error');
@@ -1427,6 +1454,14 @@
         function loadStudentsByClass(className) {
             showLoader();
             const filteredStudents = students.filter(student => student.class === className);
+            
+            // Sort by admission date (oldest first)
+            filteredStudents.sort((a, b) => {
+                const dateA = new Date(a.admissionDate || '9999-12-31');
+                const dateB = new Date(b.admissionDate || '9999-12-31');
+                return dateA - dateB;
+            });
+            
             displayStudents(filteredStudents);
             hideLoader();
         }
@@ -1436,7 +1471,7 @@
             studentListBody.innerHTML = '';
             
             if (studentsList.length === 0) {
-                studentListBody.innerHTML = '<tr><td colspan="7" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
+                studentListBody.innerHTML = '<tr><td colspan="8" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
                 return;
             }
             
@@ -1460,6 +1495,7 @@
                     <td>${student.monthlyFee}৳</td>
                     <td>${student.paidMonths || 0}</td>
                     <td>${student.dueMonths || 0}</td>
+                    <td><span class="badge bg-success">${student.advanceMonths || 0}</span></td>
                     <td>${examFeeStatus.length > 0 ? examFeeStatus.join(', ') : 'কোনোটি না'}</td>
                     <td>
                         <button class="btn btn-sm btn-primary action-btn" onclick="editStudent('${student.id}')">
@@ -1483,6 +1519,14 @@
                 student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 student.mobile.includes(searchTerm))
             );
+            
+            // Sort by admission date (oldest first)
+            filteredStudents.sort((a, b) => {
+                const dateA = new Date(a.admissionDate || '9999-12-31');
+                const dateB = new Date(b.admissionDate || '9999-12-31');
+                return dateA - dateB;
+            });
+            
             displayStudents(filteredStudents);
         }
 
@@ -1517,6 +1561,8 @@
                 dueMonths: 0,
                 totalPaid: 0,
                 totalDue: 0,
+                advanceMonths: 0,  // Track advance payments
+                lastDueUpdate: new Date().toISOString().split('T')[0],  // Track last due calculation
                 firstExam: false,
                 secondExam: false,
                 thirdExam: false,
@@ -1557,6 +1603,7 @@
             document.getElementById('edit-monthly-fee').value = student.monthlyFee;
             document.getElementById('edit-paid-months').value = student.paidMonths || 0;
             document.getElementById('edit-due-months').value = student.dueMonths || 0;
+            document.getElementById('edit-advance-months').value = student.advanceMonths || 0;
             document.getElementById('edit-total-paid').value = student.totalPaid || 0;
             document.getElementById('edit-total-due').value = student.totalDue || 0;
             document.getElementById('edit-first-exam').checked = student.firstExam || false;
@@ -1578,6 +1625,7 @@
             const monthlyFee = parseInt(document.getElementById('edit-monthly-fee').value);
             const paidMonths = parseInt(document.getElementById('edit-paid-months').value) || 0;
             const dueMonths = parseInt(document.getElementById('edit-due-months').value) || 0;
+            const advanceMonths = parseInt(document.getElementById('edit-advance-months').value) || 0;
             const totalPaid = parseInt(document.getElementById('edit-total-paid').value) || 0;
             const totalDue = parseInt(document.getElementById('edit-total-due').value) || 0;
             const firstExam = document.getElementById('edit-first-exam').checked;
@@ -1602,6 +1650,7 @@
                 monthlyFee: monthlyFee,
                 paidMonths: paidMonths,
                 dueMonths: dueMonths,
+                advanceMonths: advanceMonths,
                 totalPaid: totalPaid,
                 totalDue: totalDue,
                 firstExam: firstExam,
@@ -1767,18 +1816,34 @@
             
             showLoader();
             
-            // Calculate new values
+            // Calculate new values with advance payment logic
+            const currentDueMonths = student.dueMonths || 0;
+            const currentAdvanceMonths = student.advanceMonths || 0;
+            
+            let newDueMonths, newAdvanceMonths;
+            
+            if (paidMonths <= currentDueMonths) {
+                // Payment covers only due months
+                newDueMonths = currentDueMonths - paidMonths;
+                newAdvanceMonths = currentAdvanceMonths;
+            } else {
+                // Payment covers all dues and creates advance
+                newDueMonths = 0;
+                newAdvanceMonths = currentAdvanceMonths + (paidMonths - currentDueMonths);
+            }
+            
             const newPaidMonths = (student.paidMonths || 0) + paidMonths;
-            const newDueMonths = Math.max(0, (student.dueMonths || 0) - paidMonths);
             const newTotalPaid = (student.totalPaid || 0) + paidAmount + examFeeAmount;
-            const newTotalDue = Math.max(0, (student.totalDue || 0) - paidAmount);
+            const newTotalDue = newDueMonths * student.monthlyFee;
             
             // Update student record
             const studentUpdate = {
                 paidMonths: newPaidMonths,
                 dueMonths: newDueMonths,
+                advanceMonths: newAdvanceMonths,
                 totalPaid: newTotalPaid,
                 totalDue: newTotalDue,
+                lastDueUpdate: new Date().toISOString().split('T')[0],
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
@@ -1925,6 +1990,13 @@
                 
                 if (unpaidStudents.length === 0) return;
                 
+                // Sort by admission date (oldest first)
+                unpaidStudents.sort((a, b) => {
+                    const dateA = new Date(a.admissionDate || '9999-12-31');
+                    const dateB = new Date(b.admissionDate || '9999-12-31');
+                    return dateA - dateB;
+                });
+                
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
                 
@@ -2035,6 +2107,13 @@
                     unpaidStudentsContainer.innerHTML = `<div class="alert alert-success text-center">${className} - সকল ছাত্রের বেতন পরিশোধিত হয়েছে!</div>`;
                     return;
                 }
+                
+                // Sort by admission date (oldest first)
+                unpaidStudents.sort((a, b) => {
+                    const dateA = new Date(a.admissionDate || '9999-12-31');
+                    const dateB = new Date(b.admissionDate || '9999-12-31');
+                    return dateA - dateB;
+                });
                 
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
@@ -2183,11 +2262,100 @@
             document.getElementById('total-exam-fee-collected').textContent = totalExamFeeCollected + '৳';
             document.getElementById('today-exam-fee').textContent = todayExamFee + '৳';
             
+            // Load monthly collection by class
+            loadMonthlyCollectionByClass();
+            
             // Create class distribution chart
             createClassChart();
             
             // Create payment trend chart
             createPaymentChart();
+        }
+
+        // Get current monthly period (from 10th to 10th)
+        function getCurrentMonthlyPeriod() {
+            const now = new Date();
+            const currentDay = now.getDate();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            let periodStartDate, periodEndDate, displayMonth;
+            
+            if (currentDay >= 10) {
+                // Current period: 10th of this month to 9th of next month
+                periodStartDate = new Date(currentYear, currentMonth, 10, 0, 0, 0);
+                periodEndDate = new Date(currentYear, currentMonth + 1, 10, 0, 0, 0);
+                displayMonth = now.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
+            } else {
+                // Current period: 10th of last month to 9th of this month
+                periodStartDate = new Date(currentYear, currentMonth - 1, 10, 0, 0, 0);
+                periodEndDate = new Date(currentYear, currentMonth, 10, 0, 0, 0);
+                const lastMonth = new Date(currentYear, currentMonth - 1, 1);
+                displayMonth = lastMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
+            }
+            
+            return {
+                startDate: periodStartDate.toISOString().split('T')[0],
+                endDate: periodEndDate.toISOString().split('T')[0],
+                displayMonth: displayMonth,
+                nextResetDate: periodEndDate.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' })
+            };
+        }
+
+        // Calculate monthly collection by class
+        function loadMonthlyCollectionByClass() {
+            const period = getCurrentMonthlyPeriod();
+            
+            // Update display
+            document.getElementById('current-month-display').textContent = period.displayMonth;
+            document.getElementById('next-reset-date').textContent = period.nextResetDate;
+            
+            // Filter payments within the current period
+            const monthlyPayments = payments.filter(payment => {
+                return payment.paymentDate >= period.startDate && payment.paymentDate < period.endDate;
+            });
+            
+            // Group by class
+            const collectionByClass = {};
+            const classes = ['শিশু জামাত', 'প্রথম জামাত', 'দ্বিতীয় জামাত', 'তৃতীয় জামাত', 'হিফজ বিভাগ'];
+            
+            // Initialize all classes with 0
+            classes.forEach(className => {
+                collectionByClass[className] = 0;
+            });
+            
+            // Calculate collection for each class
+            monthlyPayments.forEach(payment => {
+                if (payment.studentClass && collectionByClass.hasOwnProperty(payment.studentClass)) {
+                    collectionByClass[payment.studentClass] += (payment.totalAmount || 0);
+                }
+            });
+            
+            // Display the results
+            const container = document.getElementById('monthly-collection-by-class');
+            let html = '';
+            let totalCollection = 0;
+            
+            classes.forEach(className => {
+                const amount = collectionByClass[className];
+                totalCollection += amount;
+                html += `
+                    <div class="monthly-class-item">
+                        <span class="monthly-class-name">${className}</span>
+                        <span class="monthly-class-amount">${amount.toLocaleString('bn-BD')}৳</span>
+                    </div>
+                `;
+            });
+            
+            // Add total
+            html += `
+                <div class="monthly-total">
+                    <span class="monthly-total-label">মোট কালেকশন</span>
+                    <span class="monthly-total-amount">${totalCollection.toLocaleString('bn-BD')}৳</span>
+                </div>
+            `;
+            
+            container.innerHTML = html;
         }
 
         function createClassChart() {
@@ -2624,7 +2792,153 @@ function simpleSearchStudents(query, studentList = students) {
     });
 }
 
+// ==========================================
+// AUTOMATIC DUE PAYMENT SYSTEM
+// ==========================================
 
+/**
+ * Calculate how many months have passed since admission date
+ * Based on 30-day intervals
+ */
+function calculateMonthsSinceAdmission(admissionDate) {
+    const admission = new Date(admissionDate);
+    const today = new Date();
+    
+    // Calculate difference in milliseconds
+    const diffTime = today - admission;
+    
+    // Calculate difference in days
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Calculate months based on 30-day intervals
+    const monthsPassed = Math.floor(diffDays / 30);
+    
+    return monthsPassed;
+}
+
+/**
+ * Calculate due months for a student based on admission date and payments
+ */
+function calculateStudentDues(student) {
+    // Calculate total months that should have been paid since admission
+    const monthsSinceAdmission = calculateMonthsSinceAdmission(student.admissionDate);
+    
+    // Get current paid months and advance months
+    const paidMonths = student.paidMonths || 0;
+    const advanceMonths = student.advanceMonths || 0;
+    
+    // Calculate actual due months
+    // Due = Months since admission - (Paid months - Advance months)
+    // If student has advance, it reduces the effective months passed
+    const effectiveMonthsPassed = Math.max(0, monthsSinceAdmission - advanceMonths);
+    const dueMonths = Math.max(0, effectiveMonthsPassed - (paidMonths - advanceMonths));
+    
+    // Calculate due amount
+    const dueAmount = dueMonths * (student.monthlyFee || 0);
+    
+    return {
+        monthsSinceAdmission: monthsSinceAdmission,
+        dueMonths: dueMonths,
+        dueAmount: dueAmount,
+        advanceMonths: advanceMonths
+    };
+}
+
+/**
+ * Update a single student's due information
+ */
+function updateStudentDues(student) {
+    const dueInfo = calculateStudentDues(student);
+    
+    // Only update if there's a change
+    if (student.dueMonths !== dueInfo.dueMonths || student.totalDue !== dueInfo.dueAmount) {
+        const updateData = {
+            dueMonths: dueInfo.dueMonths,
+            totalDue: dueInfo.dueAmount,
+            lastDueUpdate: new Date().toISOString().split('T')[0],
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        return db.collection('students').doc(student.id).update(updateData)
+            .then(() => {
+                // Update local student object
+                student.dueMonths = dueInfo.dueMonths;
+                student.totalDue = dueInfo.dueAmount;
+                student.lastDueUpdate = updateData.lastDueUpdate;
+                return true;
+            })
+            .catch(error => {
+                console.error('Error updating student dues:', error);
+                return false;
+            });
+    }
+    
+    return Promise.resolve(false);
+}
+
+/**
+ * Update all students' dues based on their admission dates
+ */
+function updateAllStudentsDues() {
+    if (!students || students.length === 0) {
+        return Promise.resolve();
+    }
+    
+    const updatePromises = students.map(student => updateStudentDues(student));
+    
+    return Promise.all(updatePromises)
+        .then(results => {
+            const updatedCount = results.filter(r => r === true).length;
+            if (updatedCount > 0) {
+                console.log(`Updated dues for ${updatedCount} students`);
+                // Refresh current page if showing student data
+                if (currentPage === 'student-list-page' && currentClass) {
+                    loadStudentsByClass(currentClass);
+                } else if (currentPage === 'unpaid-students-page') {
+                    loadUnpaidStudents();
+                } else if (currentPage === 'dashboard-page') {
+                    loadDashboard();
+                }
+            }
+            return updatedCount;
+        })
+        .catch(error => {
+            console.error('Error updating all students dues:', error);
+        });
+}
+
+/**
+ * Get student payment status summary
+ */
+function getStudentPaymentStatus(student) {
+    const dueInfo = calculateStudentDues(student);
+    const monthsSinceAdmission = dueInfo.monthsSinceAdmission;
+    const dueMonths = dueInfo.dueMonths;
+    const advanceMonths = dueInfo.advanceMonths;
+    
+    let status = '';
+    let statusClass = '';
+    
+    if (advanceMonths > 0) {
+        status = `অগ্রিম: ${advanceMonths} মাস`;
+        statusClass = 'badge bg-success';
+    } else if (dueMonths > 0) {
+        status = `বকেয়া: ${dueMonths} মাস`;
+        statusClass = 'badge bg-danger';
+    } else {
+        status = 'আপডেট';
+        statusClass = 'badge bg-primary';
+    }
+    
+    return {
+        status: status,
+        statusClass: statusClass,
+        monthsSinceAdmission: monthsSinceAdmission,
+        dueMonths: dueMonths,
+        advanceMonths: advanceMonths,
+        dueAmount: dueInfo.dueAmount
+    };
+}
 
    
    </script>
