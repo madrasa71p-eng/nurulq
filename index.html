@@ -742,8 +742,9 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="edit-due-months">বাকি মাস</label>
-                            <input type="number" class="form-control" id="edit-due-months" min="0">
+                            <label for="edit-due-months">বাকি মাস (অটো)</label>
+                            <input type="number" class="form-control" id="edit-due-months" min="0" readonly style="background-color: #f0f0f0;">
+                            <small class="text-muted">স্বয়ংক্রিয় গণনা (৩০ দিন হিসাবে)</small>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -764,8 +765,51 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="edit-total-due">মোট বাকি টাকা</label>
-                            <input type="number" class="form-control" id="edit-total-due" min="0">
+                            <input type="number" class="form-control" id="edit-total-due" min="0" readonly style="background-color: #f0f0f0; transition: background-color 0.5s;">
+                            <small class="text-muted">অটো + ম্যানুয়াল বকেয়া</small>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <h6 class="mb-3"><i class="fas fa-hand-holding-usd"></i> আগের/অতিরিক্ত বকেয়া (ম্যানুয়াল)</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit-manual-due-months">আগের বকেয়া মাস</label>
+                                <input type="number" class="form-control" id="edit-manual-due-months" min="0" value="0">
+                                <small class="text-muted">অটোমেটিক সিস্টেমের বাইরে আগের বকেয়া</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit-manual-due-amount">আগের বকেয়া টাকা</label>
+                                <input type="number" class="form-control" id="edit-manual-due-amount" min="0" value="0">
+                                <small class="text-muted">অটোমেটিক সিস্টেমের বাইরে আগের বকেয়া</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Action Buttons -->
+                    <div class="mt-3">
+                        <label class="d-block mb-2"><strong>দ্রুত সমন্বয়:</strong></label>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="adjustManualDue(-1, -500)">-১ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="adjustManualDue(-2, -1000)">-২ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="adjustManualDue(-3, -1500)">-৩ মাস</button>
+                        </div>
+                        <div class="btn-group ms-2" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="adjustManualDue(1, 500)">+১ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="adjustManualDue(2, 1000)">+২ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="adjustManualDue(3, 1500)">+৩ মাস</button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="clearManualDue()">
+                            <i class="fas fa-eraser"></i> সব মুছুন
+                        </button>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3 mb-0">
+                        <strong>📝 নোট:</strong> মোট বকেয়া = অটোমেটিক বকেয়া + আগের বকেয়া (ম্যানুয়াল)
                     </div>
                 </div>
                 
@@ -813,6 +857,7 @@
                             <th>মাসিক বেতন</th>
                             <th>জমা মাস</th>
                             <th>বাকি মাস</th>
+                            <th>মোট বকেয়া</th>
                             <th>অগ্রিম মাস</th>
                             <th>পরীক্ষার ফি</th>
                             <th>অ্যাকশন</th>
@@ -835,6 +880,17 @@
         <div id="fee-payment-page" class="page">
             <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>বেতন সংগ্রহ</h4>
+            
+            <!-- Auto Due System Info Card -->
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-2"><i class="fas fa-info-circle"></i> <strong>স্বয়ংক্রিয় বকেয়া বেতন সিস্টেম (Hriday Edition)</strong></h6>
+                <ul class="mb-0" style="font-size: 0.85rem; padding-left: 20px;">
+                    <li><strong>৩০ দিনের চক্র:</strong> ভর্তি তারিখ থেকে প্রতি ৩০ দিন পর পর ১ মাস বকেয়া স্বয়ংক্রিয়ভাবে যোগ হয়</li>
+                    <li><strong>অগ্রিম বেতন:</strong> বকেয়ার বেশি টাকা দিলে অগ্রিম হিসেবে সংরক্ষিত হবে</li>
+                    <li><strong>ম্যানুয়াল বকেয়া:</strong> পুরনো বকেয়া Edit থেকে যোগ করতে পারবেন</li>
+                    <li><strong>স্বয়ংক্রিয় আপডেট:</strong> প্রতি ৩০ মিনিটে সিস্টেম স্বয়ংক্রিয়ভাবে আপডেট হয়</li>
+                </ul>
+            </div>
             
             <form id="fee-payment-form">
                 <select class="form-select" id="fee-class" required>
@@ -1349,6 +1405,35 @@
             document.getElementById('paid-months').addEventListener('input', function() {
                 calculatePaymentAmount();
             });
+            
+            // Manual due fields - Update total when changed
+            document.getElementById('edit-manual-due-months').addEventListener('input', function() {
+                updateTotalDueDisplay();
+            });
+            
+            document.getElementById('edit-manual-due-amount').addEventListener('input', function() {
+                updateTotalDueDisplay();
+            });
+            
+            // Admission date change - Recalculate automatic dues
+            document.getElementById('edit-admission-date').addEventListener('change', function() {
+                recalculateEditFormDues();
+            });
+            
+            // Monthly fee change - Recalculate dues
+            document.getElementById('edit-monthly-fee').addEventListener('input', function() {
+                recalculateEditFormDues();
+            });
+            
+            // Paid months change - Recalculate dues
+            document.getElementById('edit-paid-months').addEventListener('input', function() {
+                recalculateEditFormDues();
+            });
+            
+            // Advance months change - Recalculate dues
+            document.getElementById('edit-advance-months').addEventListener('input', function() {
+                recalculateEditFormDues();
+            });
         }
 
         // Firebase Authentication Functions
@@ -1412,11 +1497,8 @@
                 hideLoader();
                 showToast('ডেটা সফলভাবে লোড হয়েছে!', 'success');
                 
-                // Start auto-update interval
-                if (autoUpdateInterval) clearInterval(autoUpdateInterval);
-                autoUpdateInterval = setInterval(() => {
-                    updateAllStudentsDues();
-                }, 5 * 60 * 1000); // Update every 5 minutes
+                // Initialize automatic due system (Hriday Edition)
+                initializeAutoDueSystem();
             }).catch(error => {
                 hideLoader();
                 showToast('ডেটা লোড করতে সমস্যা: ' + error.message, 'error');
@@ -1471,7 +1553,7 @@
             studentListBody.innerHTML = '';
             
             if (studentsList.length === 0) {
-                studentListBody.innerHTML = '<tr><td colspan="8" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
+                studentListBody.innerHTML = '<tr><td colspan="9" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
                 return;
             }
             
@@ -1484,6 +1566,27 @@
                 if (student.secondExam) examFeeStatus.push('দ্বিতীয়');
                 if (student.thirdExam) examFeeStatus.push('তৃতীয়');
                 
+                // Calculate total due (including manual dues)
+                const autoDueMonths = student.dueMonths || 0;
+                const manualDueMonths = student.manualDueMonths || 0;
+                const totalDueMonths = autoDueMonths + manualDueMonths;
+                
+                const autoDueAmount = autoDueMonths * student.monthlyFee;
+                const manualDueAmount = student.manualDueAmount || 0;
+                const totalDue = autoDueAmount + manualDueAmount;
+                
+                // Format total due months display
+                let dueMonthsDisplay = `${totalDueMonths}`;
+                if (manualDueMonths > 0) {
+                    dueMonthsDisplay += ` <span class="badge bg-warning" style="font-size: 0.65rem;">+${manualDueMonths}</span>`;
+                }
+                
+                // Format total due display
+                let totalDueDisplay = `${totalDue}৳`;
+                if (manualDueAmount > 0) {
+                    totalDueDisplay += ` <span class="badge bg-warning" style="font-size: 0.7rem;">+${manualDueAmount}৳</span>`;
+                }
+                
                 row.innerHTML = `
                     <td class="serial-number">${index + 1}</td>
                     <td>
@@ -1494,7 +1597,8 @@
                     </td>
                     <td>${student.monthlyFee}৳</td>
                     <td>${student.paidMonths || 0}</td>
-                    <td>${student.dueMonths || 0}</td>
+                    <td>${dueMonthsDisplay}</td>
+                    <td>${totalDueDisplay}</td>
                     <td><span class="badge bg-success">${student.advanceMonths || 0}</span></td>
                     <td>${examFeeStatus.length > 0 ? examFeeStatus.join(', ') : 'কোনোটি না'}</td>
                     <td>
@@ -1602,15 +1706,125 @@
             document.getElementById('edit-admission-date').value = student.admissionDate;
             document.getElementById('edit-monthly-fee').value = student.monthlyFee;
             document.getElementById('edit-paid-months').value = student.paidMonths || 0;
-            document.getElementById('edit-due-months').value = student.dueMonths || 0;
             document.getElementById('edit-advance-months').value = student.advanceMonths || 0;
             document.getElementById('edit-total-paid').value = student.totalPaid || 0;
-            document.getElementById('edit-total-due').value = student.totalDue || 0;
             document.getElementById('edit-first-exam').checked = student.firstExam || false;
             document.getElementById('edit-second-exam').checked = student.secondExam || false;
             document.getElementById('edit-third-exam').checked = student.thirdExam || false;
             
+            // Load manual due fields
+            document.getElementById('edit-manual-due-months').value = student.manualDueMonths || 0;
+            document.getElementById('edit-manual-due-amount').value = student.manualDueAmount || 0;
+            
+            // Recalculate automatic due months based on admission date
+            const dueInfo = calculateStudentDues(student);
+            document.getElementById('edit-due-months').value = dueInfo.autoDueMonths;
+            
+            // Calculate and display total due (auto + manual)
+            const totalDue = (dueInfo.autoDueMonths * student.monthlyFee) + (student.manualDueAmount || 0);
+            document.getElementById('edit-total-due').value = totalDue;
+            
+            // Update total due display
+            updateTotalDueDisplay();
+            
             showPage('edit-student-page');
+        }
+        
+        // Recalculate dues in edit form based on admission date (30-day cycle)
+        function recalculateEditFormDues() {
+            const admissionDate = document.getElementById('edit-admission-date').value;
+            const monthlyFee = parseInt(document.getElementById('edit-monthly-fee').value) || 0;
+            const paidMonths = parseInt(document.getElementById('edit-paid-months').value) || 0;
+            const advanceMonths = parseInt(document.getElementById('edit-advance-months').value) || 0;
+            const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
+            const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
+            
+            if (!admissionDate || !monthlyFee) {
+                return;
+            }
+            
+            // Create a temporary student object for calculation
+            const tempStudent = {
+                admissionDate: admissionDate,
+                monthlyFee: monthlyFee,
+                paidMonths: paidMonths,
+                advanceMonths: advanceMonths,
+                manualDueMonths: manualDueMonths,
+                manualDueAmount: manualDueAmount
+            };
+            
+            // Calculate dues using the automatic system
+            const dueInfo = calculateStudentDues(tempStudent);
+            
+            // Update the automatic due months field
+            document.getElementById('edit-due-months').value = dueInfo.autoDueMonths;
+            
+            // Update total due display
+            updateTotalDueDisplay();
+            
+            // Visual feedback
+            const dueMonthsField = document.getElementById('edit-due-months');
+            dueMonthsField.style.backgroundColor = '#fff3cd';
+            setTimeout(() => {
+                dueMonthsField.style.backgroundColor = '#f0f0f0';
+            }, 500);
+        }
+        
+        // Update total due display when manual dues change
+        function updateTotalDueDisplay() {
+            const autoDueMonths = parseInt(document.getElementById('edit-due-months').value) || 0;
+            const monthlyFee = parseInt(document.getElementById('edit-monthly-fee').value) || 0;
+            const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
+            const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
+            
+            // Calculate automatic due amount
+            const autoDueAmount = autoDueMonths * monthlyFee;
+            
+            // Calculate total
+            const totalDueMonths = autoDueMonths + manualDueMonths;
+            const totalDueAmount = autoDueAmount + manualDueAmount;
+            
+            // Update the display field
+            document.getElementById('edit-total-due').value = totalDueAmount;
+            
+            // Show a visual indicator of the calculation
+            const totalDueField = document.getElementById('edit-total-due');
+            totalDueField.style.backgroundColor = '#e8f5e9';
+            setTimeout(() => {
+                totalDueField.style.backgroundColor = '#f0f0f0';
+            }, 500);
+        }
+        
+        // Quick adjust manual due (increase or decrease)
+        function adjustManualDue(months, amount) {
+            const currentMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
+            const currentAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
+            
+            // Calculate new values
+            const newMonths = Math.max(0, currentMonths + months);
+            const newAmount = Math.max(0, currentAmount + amount);
+            
+            // Update fields
+            document.getElementById('edit-manual-due-months').value = newMonths;
+            document.getElementById('edit-manual-due-amount').value = newAmount;
+            
+            // Update total display
+            updateTotalDueDisplay();
+            
+            // Show toast
+            if (months < 0) {
+                showToast(`${Math.abs(months)} মাস বকেয়া কমানো হয়েছে`, 'success');
+            } else {
+                showToast(`${months} মাস বকেয়া যোগ করা হয়েছে`, 'info');
+            }
+        }
+        
+        // Clear all manual dues
+        function clearManualDue() {
+            document.getElementById('edit-manual-due-months').value = 0;
+            document.getElementById('edit-manual-due-amount').value = 0;
+            updateTotalDueDisplay();
+            showToast('ম্যানুয়াল বকেয়া মুছে ফেলা হয়েছে', 'success');
         }
 
         function updateStudent() {
@@ -1627,10 +1841,11 @@
             const dueMonths = parseInt(document.getElementById('edit-due-months').value) || 0;
             const advanceMonths = parseInt(document.getElementById('edit-advance-months').value) || 0;
             const totalPaid = parseInt(document.getElementById('edit-total-paid').value) || 0;
-            const totalDue = parseInt(document.getElementById('edit-total-due').value) || 0;
             const firstExam = document.getElementById('edit-first-exam').checked;
             const secondExam = document.getElementById('edit-second-exam').checked;
             const thirdExam = document.getElementById('edit-third-exam').checked;
+            const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
+            const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
             
             if (!studentId || !studentClass || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
                 showToast('সমস্ত প্রয়োজনীয় তথ্য প্রদান করুন', 'error');
@@ -1638,6 +1853,10 @@
             }
             
             showLoader();
+            
+            // Calculate total due correctly (automatic + manual)
+            const autoDueAmount = dueMonths * monthlyFee;
+            const totalDue = autoDueAmount + manualDueAmount;
             
             const studentData = {
                 class: studentClass,
@@ -1656,6 +1875,9 @@
                 firstExam: firstExam,
                 secondExam: secondExam,
                 thirdExam: thirdExam,
+                manualDueMonths: manualDueMonths,
+                manualDueAmount: manualDueAmount,
+                lastDueUpdate: new Date().toISOString().split('T')[0],
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
@@ -1816,25 +2038,24 @@
             
             showLoader();
             
-            // Calculate new values with advance payment logic
-            const currentDueMonths = student.dueMonths || 0;
-            const currentAdvanceMonths = student.advanceMonths || 0;
+            // ৩. বেতন পরিশোধ (Payment Handling) - Using new advance payment logic
+            const paymentResult = processPaymentWithAdvance(student, paidMonths);
             
-            let newDueMonths, newAdvanceMonths;
-            
-            if (paidMonths <= currentDueMonths) {
-                // Payment covers only due months
-                newDueMonths = currentDueMonths - paidMonths;
-                newAdvanceMonths = currentAdvanceMonths;
-            } else {
-                // Payment covers all dues and creates advance
-                newDueMonths = 0;
-                newAdvanceMonths = currentAdvanceMonths + (paidMonths - currentDueMonths);
-            }
-            
-            const newPaidMonths = (student.paidMonths || 0) + paidMonths;
+            const newPaidMonths = paymentResult.newPaidMonths;
+            const newDueMonths = paymentResult.newDueMonths;
+            const newAdvanceMonths = paymentResult.newAdvanceMonths;
             const newTotalPaid = (student.totalPaid || 0) + paidAmount + examFeeAmount;
-            const newTotalDue = newDueMonths * student.monthlyFee;
+            
+            // Recalculate total due including manual dues
+            const dueInfo = calculateStudentDues({
+                ...student,
+                paidMonths: newPaidMonths,
+                dueMonths: newDueMonths,
+                advanceMonths: newAdvanceMonths,
+                manualDueMonths: paymentResult.manualDueMonths,
+                manualDueAmount: paymentResult.manualDueAmount
+            });
+            const newTotalDue = dueInfo.totalDueAmount;
             
             // Update student record
             const studentUpdate = {
@@ -1843,6 +2064,8 @@
                 advanceMonths: newAdvanceMonths,
                 totalPaid: newTotalPaid,
                 totalDue: newTotalDue,
+                manualDueMonths: paymentResult.manualDueMonths,
+                manualDueAmount: paymentResult.manualDueAmount,
                 lastDueUpdate: new Date().toISOString().split('T')[0],
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -1879,7 +2102,18 @@
             ])
             .then(() => {
                 hideLoader();
-                showToast('বেতন সফলভাবে জমা দেওয়া হয়েছে!', 'success');
+                
+                // Show detailed success message
+                let successMsg = 'বেতন সফলভাবে জমা দেওয়া হয়েছে!';
+                if (newAdvanceMonths > 0) {
+                    successMsg += ` (${newAdvanceMonths} মাস অগ্রিম)`;
+                } else if (newDueMonths > 0) {
+                    successMsg += ` (${newDueMonths} মাস বকেয়া বাকি)`;
+                } else {
+                    successMsg += ' (সম্পূর্ণ আপডেট)';
+                }
+                
+                showToast(successMsg, 'success');
                 document.getElementById('fee-payment-form').reset();
                 document.getElementById('exam-fee-container').style.display = 'none';
                 
@@ -1902,10 +2136,9 @@
             
             // Sort by timestamp (newest first)
             todayPayments.sort((a, b) => {
-                if (a.timestamp && b.timestamp) {
-                    return b.timestamp.toDate() - a.timestamp.toDate();
-                }
-                return 0;
+                const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                return dateB - dateA;
             });
             
             displayTodayPayments();
@@ -1926,18 +2159,16 @@
             const uniqueStudents = new Set();
             
             todayPayments.forEach((payment, index) => {
-                const row = document.createElement('tr');
-                
-                // Format time
-                let timeString = '';
-                if (payment.timestamp) {
-                    const date = payment.timestamp.toDate();
-                    timeString = date.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
-                }
+                const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
+                const timeString = paymentDate.toLocaleTimeString('bn-BD', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
                 
                 totalAmount += payment.totalAmount || 0;
                 uniqueStudents.add(payment.studentId);
                 
+                const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="serial-number">${index + 1}</td>
                     <td>${payment.studentName}</td>
@@ -2044,6 +2275,28 @@
                 const unpaidBody = document.getElementById(`unpaid-body-${className.replace(/\s+/g, '-')}`);
                 unpaidStudents.forEach(student => {
                     const row = document.createElement('tr');
+                    
+                    // Calculate total due with manual dues
+                    const autoDueMonths = student.dueMonths || 0;
+                    const manualDueMonths = student.manualDueMonths || 0;
+                    const totalDueMonths = autoDueMonths + manualDueMonths;
+                    
+                    const autoDueAmount = autoDueMonths * student.monthlyFee;
+                    const manualDueAmount = student.manualDueAmount || 0;
+                    const totalDue = autoDueAmount + manualDueAmount;
+                    
+                    // Format due months display
+                    let dueMonthsDisplay = `${totalDueMonths}`;
+                    if (manualDueMonths > 0) {
+                        dueMonthsDisplay += ` <span class="badge bg-warning" style="font-size: 0.65rem;">+${manualDueMonths}</span>`;
+                    }
+                    
+                    // Format total due display
+                    let totalDueDisplay = `${totalDue}৳`;
+                    if (manualDueAmount > 0) {
+                        totalDueDisplay += ` <span class="badge bg-warning" style="font-size: 0.7rem;">+${manualDueAmount}৳</span>`;
+                    }
+                    
                     row.innerHTML = `
                         <td>
                             <div>${student.name}</div>
@@ -2052,8 +2305,8 @@
                         <td>
                             <a href="tel:${student.mobile}" class="mobile-link">${student.mobile}</a>
                         </td>
-                        <td>${student.dueMonths || 0}</td>
-                        <td>${student.totalDue || 0}৳</td>
+                        <td>${dueMonthsDisplay}</td>
+                        <td>${totalDueDisplay}</td>
                         <td>
                             <button class="btn btn-sm btn-primary action-btn" onclick="editStudent('${student.id}')">
                                 <i class="fas fa-edit"></i>
@@ -2162,6 +2415,28 @@
                 const unpaidBody = document.getElementById(`unpaid-body-${className.replace(/\s+/g, '-')}`);
                 unpaidStudents.forEach(student => {
                     const row = document.createElement('tr');
+                    
+                    // Calculate total due with manual dues
+                    const autoDueMonths = student.dueMonths || 0;
+                    const manualDueMonths = student.manualDueMonths || 0;
+                    const totalDueMonths = autoDueMonths + manualDueMonths;
+                    
+                    const autoDueAmount = autoDueMonths * student.monthlyFee;
+                    const manualDueAmount = student.manualDueAmount || 0;
+                    const totalDue = autoDueAmount + manualDueAmount;
+                    
+                    // Format due months display
+                    let dueMonthsDisplay = `${totalDueMonths}`;
+                    if (manualDueMonths > 0) {
+                        dueMonthsDisplay += ` <span class="badge bg-warning" style="font-size: 0.65rem;">+${manualDueMonths}</span>`;
+                    }
+                    
+                    // Format total due display
+                    let totalDueDisplay = `${totalDue}৳`;
+                    if (manualDueAmount > 0) {
+                        totalDueDisplay += ` <span class="badge bg-warning" style="font-size: 0.7rem;">+${manualDueAmount}৳</span>`;
+                    }
+                    
                     row.innerHTML = `
                         <td>
                             <div>${student.name}</div>
@@ -2170,8 +2445,8 @@
                         <td>
                             <a href="tel:${student.mobile}" class="mobile-link">${student.mobile}</a>
                         </td>
-                        <td>${student.dueMonths || 0}</td>
-                        <td>${student.totalDue || 0}৳</td>
+                        <td>${dueMonthsDisplay}</td>
+                        <td>${totalDueDisplay}</td>
                         <td>
                             <button class="btn btn-sm btn-primary action-btn" onclick="editStudent('${student.id}')">
                                 <i class="fas fa-edit"></i>
@@ -2793,16 +3068,24 @@ function simpleSearchStudents(query, studentList = students) {
 }
 
 // ==========================================
-// AUTOMATIC DUE PAYMENT SYSTEM
+// AUTOMATIC DUE PAYMENT SYSTEM (Hriday Edition)
+// স্বয়ংক্রিয় বকেয়া বেতন সিস্টেম
 // ==========================================
 
 /**
- * Calculate how many months have passed since admission date
- * Based on 30-day intervals
+ * ১. মূল ভিত্তি: ভর্তি তারিখ ভিত্তিক ৩০ দিনের সময়চক্র
+ * Calculate how many 30-day cycles have passed since admission date
+ * This calculation NEVER stops, regardless of payment status
  */
 function calculateMonthsSinceAdmission(admissionDate) {
+    if (!admissionDate) return 0;
+    
     const admission = new Date(admissionDate);
     const today = new Date();
+    
+    // Set to start of day for accurate calculation
+    admission.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
     
     // Calculate difference in milliseconds
     const diffTime = today - admission;
@@ -2811,13 +3094,16 @@ function calculateMonthsSinceAdmission(admissionDate) {
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     // Calculate months based on 30-day intervals
+    // This is the core of the system - every 30 days = 1 month
     const monthsPassed = Math.floor(diffDays / 30);
     
-    return monthsPassed;
+    return Math.max(0, monthsPassed);
 }
 
 /**
+ * ২. বকেয়া হিসাব (Due Calculation)
  * Calculate due months for a student based on admission date and payments
+ * Formula: totalDueMonths = floor((today - admissionDate) / 30 days)
  */
 function calculateStudentDues(student) {
     // Calculate total months that should have been paid since admission
@@ -2827,34 +3113,124 @@ function calculateStudentDues(student) {
     const paidMonths = student.paidMonths || 0;
     const advanceMonths = student.advanceMonths || 0;
     
-    // Calculate actual due months
-    // Due = Months since admission - (Paid months - Advance months)
-    // If student has advance, it reduces the effective months passed
-    const effectiveMonthsPassed = Math.max(0, monthsSinceAdmission - advanceMonths);
-    const dueMonths = Math.max(0, effectiveMonthsPassed - (paidMonths - advanceMonths));
+    // ৩. অগ্রিম বেতন (Advance Tracking)
+    // If student has advance, it covers future months
+    // Advance is deducted from months since admission first
+    let effectiveMonthsSinceAdmission = monthsSinceAdmission;
+    let currentAdvance = advanceMonths;
     
-    // Calculate due amount
-    const dueAmount = dueMonths * (student.monthlyFee || 0);
+    if (advanceMonths > 0) {
+        // Advance covers the most recent months
+        effectiveMonthsSinceAdmission = Math.max(0, monthsSinceAdmission - advanceMonths);
+        
+        // If advance is more than months passed, keep the extra advance
+        if (advanceMonths > monthsSinceAdmission) {
+            currentAdvance = advanceMonths - monthsSinceAdmission;
+            effectiveMonthsSinceAdmission = 0;
+        } else {
+            currentAdvance = 0;
+        }
+    }
+    
+    // Calculate due months
+    // Due = Effective months since admission - paid months (excluding advance)
+    const dueMonths = Math.max(0, effectiveMonthsSinceAdmission - paidMonths);
+    
+    // Calculate due amount (automatic calculation only)
+    const autoDueAmount = dueMonths * (student.monthlyFee || 0);
+    
+    // ৫. ম্যানুয়াল বকেয়া সংশোধন (Manual Adjustment)
+    // Add manual dues on top of automatic calculation
+    const manualDueMonths = student.manualDueMonths || 0;
+    const manualDueAmount = student.manualDueAmount || 0;
+    
+    // Total dues = automatic + manual
+    const totalDueMonths = dueMonths + manualDueMonths;
+    const totalDueAmount = autoDueAmount + manualDueAmount;
     
     return {
         monthsSinceAdmission: monthsSinceAdmission,
-        dueMonths: dueMonths,
-        dueAmount: dueAmount,
-        advanceMonths: advanceMonths
+        autoDueMonths: dueMonths,  // Automatic due months
+        autoDueAmount: autoDueAmount,  // Automatic due amount
+        manualDueMonths: manualDueMonths,  // Manual due months
+        manualDueAmount: manualDueAmount,  // Manual due amount
+        totalDueMonths: totalDueMonths,  // Total due months
+        totalDueAmount: totalDueAmount,  // Total due amount
+        advanceMonths: currentAdvance,  // Updated advance months
+        paidMonths: paidMonths
+    };
+}
+
+/**
+ * ৩. বেতন পরিশোধ (Payment Handling)
+ * Process payment and update due/advance accordingly
+ */
+function processPaymentWithAdvance(student, payingMonths) {
+    const dueInfo = calculateStudentDues(student);
+    
+    let newDueMonths = dueInfo.autoDueMonths;
+    let newAdvanceMonths = dueInfo.advanceMonths;
+    let newPaidMonths = student.paidMonths || 0;
+    
+    if (payingMonths <= dueInfo.totalDueMonths) {
+        // Payment covers only due months
+        // First clear manual dues, then automatic dues
+        const manualDueMonths = student.manualDueMonths || 0;
+        
+        if (payingMonths <= manualDueMonths) {
+            // Payment only covers manual dues
+            student.manualDueMonths = manualDueMonths - payingMonths;
+            student.manualDueAmount = Math.max(0, (student.manualDueAmount || 0) - (payingMonths * student.monthlyFee));
+        } else {
+            // Payment covers all manual dues and some automatic dues
+            const remainingPayment = payingMonths - manualDueMonths;
+            student.manualDueMonths = 0;
+            student.manualDueAmount = 0;
+            newDueMonths = Math.max(0, dueInfo.autoDueMonths - remainingPayment);
+            newPaidMonths += remainingPayment;
+        }
+        
+        newAdvanceMonths = dueInfo.advanceMonths;
+    } else {
+        // Payment covers all dues and creates advance
+        // Clear all dues first
+        student.manualDueMonths = 0;
+        student.manualDueAmount = 0;
+        newDueMonths = 0;
+        
+        // Calculate advance
+        const excessPayment = payingMonths - dueInfo.totalDueMonths;
+        newAdvanceMonths = dueInfo.advanceMonths + excessPayment;
+        newPaidMonths += dueInfo.autoDueMonths;
+    }
+    
+    return {
+        newDueMonths: newDueMonths,
+        newAdvanceMonths: newAdvanceMonths,
+        newPaidMonths: newPaidMonths,
+        manualDueMonths: student.manualDueMonths || 0,
+        manualDueAmount: student.manualDueAmount || 0
     };
 }
 
 /**
  * Update a single student's due information
+ * This runs automatically and continuously
+ * ৬. সিস্টেমের সুবিধা - Automatic and continuous updates
  */
 function updateStudentDues(student) {
     const dueInfo = calculateStudentDues(student);
     
-    // Only update if there's a change
-    if (student.dueMonths !== dueInfo.dueMonths || student.totalDue !== dueInfo.dueAmount) {
+    // Check if there's any change in automatic calculation
+    const hasAutoDueChange = student.dueMonths !== dueInfo.autoDueMonths;
+    const hasTotalDueChange = student.totalDue !== dueInfo.totalDueAmount;
+    const hasAdvanceChange = student.advanceMonths !== dueInfo.advanceMonths;
+    
+    if (hasAutoDueChange || hasTotalDueChange || hasAdvanceChange) {
         const updateData = {
-            dueMonths: dueInfo.dueMonths,
-            totalDue: dueInfo.dueAmount,
+            dueMonths: dueInfo.autoDueMonths,  // Store automatic due months
+            totalDue: dueInfo.totalDueAmount,  // Store total due amount (auto + manual)
+            advanceMonths: dueInfo.advanceMonths,  // Update advance months
             lastDueUpdate: new Date().toISOString().split('T')[0],
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -2862,8 +3238,9 @@ function updateStudentDues(student) {
         return db.collection('students').doc(student.id).update(updateData)
             .then(() => {
                 // Update local student object
-                student.dueMonths = dueInfo.dueMonths;
-                student.totalDue = dueInfo.dueAmount;
+                student.dueMonths = dueInfo.autoDueMonths;
+                student.totalDue = dueInfo.totalDueAmount;
+                student.advanceMonths = dueInfo.advanceMonths;
                 student.lastDueUpdate = updateData.lastDueUpdate;
                 return true;
             })
@@ -2878,11 +3255,14 @@ function updateStudentDues(student) {
 
 /**
  * Update all students' dues based on their admission dates
+ * This should run periodically (e.g., when page loads, every hour, etc.)
  */
 function updateAllStudentsDues() {
     if (!students || students.length === 0) {
         return Promise.resolve();
     }
+    
+    console.log('🔄 Updating dues for all students based on 30-day cycles...');
     
     const updatePromises = students.map(student => updateStudentDues(student));
     
@@ -2890,7 +3270,7 @@ function updateAllStudentsDues() {
         .then(results => {
             const updatedCount = results.filter(r => r === true).length;
             if (updatedCount > 0) {
-                console.log(`Updated dues for ${updatedCount} students`);
+                console.log(`✅ Updated dues for ${updatedCount} students`);
                 // Refresh current page if showing student data
                 if (currentPage === 'student-list-page' && currentClass) {
                     loadStudentsByClass(currentClass);
@@ -2908,36 +3288,77 @@ function updateAllStudentsDues() {
 }
 
 /**
- * Get student payment status summary
+ * Get student payment status summary with detailed information
  */
 function getStudentPaymentStatus(student) {
     const dueInfo = calculateStudentDues(student);
     const monthsSinceAdmission = dueInfo.monthsSinceAdmission;
-    const dueMonths = dueInfo.dueMonths;
+    const totalDueMonths = dueInfo.totalDueMonths;
     const advanceMonths = dueInfo.advanceMonths;
     
     let status = '';
     let statusClass = '';
+    let details = '';
     
     if (advanceMonths > 0) {
         status = `অগ্রিম: ${advanceMonths} মাস`;
         statusClass = 'badge bg-success';
-    } else if (dueMonths > 0) {
-        status = `বকেয়া: ${dueMonths} মাস`;
+        details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, ${advanceMonths} মাস অগ্রিম জমা`;
+    } else if (totalDueMonths > 0) {
+        status = `বকেয়া: ${totalDueMonths} মাস`;
         statusClass = 'badge bg-danger';
+        
+        if (dueInfo.manualDueMonths > 0) {
+            details = `স্বয়ংক্রিয়: ${dueInfo.autoDueMonths} মাস, ম্যানুয়াল: ${dueInfo.manualDueMonths} মাস`;
+        } else {
+            details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, ${totalDueMonths} মাস বকেয়া`;
+        }
     } else {
         status = 'আপডেট';
         statusClass = 'badge bg-primary';
+        details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, কোনো বকেয়া নেই`;
     }
     
     return {
         status: status,
         statusClass: statusClass,
+        details: details,
         monthsSinceAdmission: monthsSinceAdmission,
-        dueMonths: dueMonths,
+        autoDueMonths: dueInfo.autoDueMonths,
+        manualDueMonths: dueInfo.manualDueMonths,
+        totalDueMonths: totalDueMonths,
         advanceMonths: advanceMonths,
-        dueAmount: dueInfo.dueAmount
+        autoDueAmount: dueInfo.autoDueAmount,
+        manualDueAmount: dueInfo.manualDueAmount,
+        totalDueAmount: dueInfo.totalDueAmount
     };
+}
+
+/**
+ * Initialize automatic due update system
+ * Runs on page load and periodically
+ */
+function initializeAutoDueSystem() {
+    console.log('🚀 Initializing Automatic Due Payment System (Hriday Edition)');
+    console.log('📋 System Features:');
+    console.log('   ✓ ভর্তি তারিখ ভিত্তিক ৩০ দিনের সময়চক্র');
+    console.log('   ✓ স্বয়ংক্রিয় বকেয়া হিসাব');
+    console.log('   ✓ অগ্রিম বেতন ট্র্যাকিং');
+    console.log('   ✓ ম্যানুয়াল বকেয়া সংশোধন');
+    
+    // Clear any existing interval
+    if (autoUpdateInterval) {
+        clearInterval(autoUpdateInterval);
+    }
+    
+    // Update dues every 30 minutes
+    autoUpdateInterval = setInterval(() => {
+        console.log('⏰ Periodic due update triggered (30-day cycle check)');
+        updateAllStudentsDues();
+    }, 30 * 60 * 1000);  // 30 minutes
+    
+    console.log('✅ Auto Due System initialized - Updates every 30 minutes');
+    console.log('💡 Tip: Dues are calculated based on 30-day cycles from admission date');
 }
 
    
