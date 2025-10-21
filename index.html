@@ -1617,12 +1617,27 @@
 
         function filterStudents(searchTerm) {
             // শুধুমাত্র বর্তমান ক্লাসের ছাত্রদের মধ্যে সার্চ করবে
-            const filteredStudents = students.filter(student => 
-                student.class === currentClass &&
-                (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                student.mobile.includes(searchTerm))
-            );
+            const classStudents = students.filter(student => student.class === currentClass);
+            
+            let filteredStudents;
+            
+            if (!searchTerm || searchTerm.trim() === '') {
+                // যদি সার্চ টার্ম খালি থাকে, সব ছাত্র দেখাও
+                filteredStudents = classStudents;
+            } else {
+                // Fuse.js দিয়ে fuzzy search
+                const fuse = new Fuse(classStudents, {
+                    keys: ['name', 'fatherName', 'mobile'],
+                    threshold: 0.4, // 0 = exact match, 1 = match anything
+                    distance: 100,
+                    includeScore: true,
+                    ignoreLocation: true,
+                    minMatchCharLength: 1
+                });
+                
+                const fuseResults = fuse.search(searchTerm);
+                filteredStudents = fuseResults.map(result => result.item);
+            }
             
             // Sort by admission date (oldest first)
             filteredStudents.sort((a, b) => {
