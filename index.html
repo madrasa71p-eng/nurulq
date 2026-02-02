@@ -910,6 +910,12 @@
                     <option value="হিফজ বিভাগ">হিফজ বিভাগ</option>
                 </select>
                 
+                <select class="form-select" id="student-gender" required>
+                    <option value="">লিঙ্গ নির্বাচন করুন</option>
+                    <option value="male">ছেলে</option>
+                    <option value="female">মেয়ে</option>
+                </select>
+                
                 <input type="text" class="form-control" id="student-name" placeholder="ছাত্র/ছাত্রীর নাম" required>
                 <input type="text" class="form-control" id="father-name" placeholder="পিতার নাম" required>
                 <input type="text" class="form-control" id="mother-name" placeholder="মাতার নাম">
@@ -941,6 +947,12 @@
                     <option value="দ্বিতীয় জামাত">দ্বিতীয় জামাত</option>
                     <option value="তৃতীয় জামাত">তৃতীয় জামাত</option>
                     <option value="হিফজ বিভাগ">হিফজ বিভাগ</option>
+                </select>
+                
+                <select class="form-select" id="edit-student-gender" required>
+                    <option value="">লিঙ্গ নির্বাচন করুন</option>
+                    <option value="male">ছেলে</option>
+                    <option value="female">মেয়ে</option>
                 </select>
                 
                 <input type="text" class="form-control" id="edit-student-name" placeholder="ছাত্র/ছাত্রীর নাম" required>
@@ -1544,24 +1556,7 @@
             // Setup event listeners
             setupEventListeners();
         });
-        function setupEventListeners() {
-    // ... existing code ...
-    
-    // Class selection for fee payment - Clear search when class changes
-    document.getElementById('fee-class').addEventListener('change', function() {
-        loadStudentsForFeePayment(this.value);
-        // Clear search input and results when class changes
-        document.getElementById('student-search-input').value = '';
-        document.getElementById('search-results').style.display = 'none';
-    });
-    
-    // Student search for fee payment - Use advanced search
-    document.getElementById('student-search-input').addEventListener('input', function() {
-        searchStudentsForFeePayment(this.value);
-    });
-    
-    // ... existing code ...
-}
+
         // Update current time
         function updateCurrentTime() {
             const now = new Date();
@@ -1846,11 +1841,7 @@
             const filteredStudents = students.filter(student => student.class === className);
             
             // Sort by admission date (oldest first)
-            filteredStudents.sort((a, b) => {
-                const dateA = new Date(a.admissionDate || '9999-12-31');
-                const dateB = new Date(b.admissionDate || '9999-12-31');
-                return dateA - dateB;
-            });
+            filteredStudents.sort(compareStudentsForList);
             
             displayStudents(filteredStudents);
             hideLoader();
@@ -1948,17 +1939,45 @@
             }
             
             // Sort by admission date (oldest first)
-            filteredStudents.sort((a, b) => {
-                const dateA = new Date(a.admissionDate || '9999-12-31');
-                const dateB = new Date(b.admissionDate || '9999-12-31');
-                return dateA - dateB;
-            });
+            filteredStudents.sort(compareStudentsForList);
             
             displayStudents(filteredStudents);
         }
 
+        function getStudentGenderRank(student) {
+            const g = (student && student.gender != null ? String(student.gender) : '').trim().toLowerCase();
+            if (g === 'male' || g === 'm' || g === 'boy' || g === 'ছেলে') return 0;
+            if (g === 'female' || g === 'f' || g === 'girl' || g === 'মেয়ে' || g === 'মেয়ে') return 1;
+            return 2;
+        }
+
+        function getStudentCreatedAtTime(student) {
+            const createdAt = student ? student.createdAt : null;
+            if (!createdAt) return null;
+            if (typeof createdAt.toDate === 'function') return createdAt.toDate().getTime();
+            const t = new Date(createdAt).getTime();
+            return Number.isFinite(t) ? t : null;
+        }
+
+        function compareStudentsForList(a, b) {
+            const genderRankDiff = getStudentGenderRank(a) - getStudentGenderRank(b);
+            if (genderRankDiff !== 0) return genderRankDiff;
+
+            const dateA = new Date((a && a.admissionDate) ? a.admissionDate : '9999-12-31');
+            const dateB = new Date((b && b.admissionDate) ? b.admissionDate : '9999-12-31');
+            const dateDiff = dateA - dateB;
+            if (dateDiff !== 0) return dateDiff;
+
+            const tsA = getStudentCreatedAtTime(a);
+            const tsB = getStudentCreatedAtTime(b);
+            if (tsA != null && tsB != null && tsA !== tsB) return tsA - tsB;
+
+            return String((a && a.name) ? a.name : '').localeCompare(String((b && b.name) ? b.name : ''), 'bn');
+        }
+
         function addStudent() {
             const studentClass = document.getElementById('student-class').value;
+            const gender = document.getElementById('student-gender').value;
             const name = document.getElementById('student-name').value;
             const fatherName = document.getElementById('father-name').value;
             const motherName = document.getElementById('mother-name').value;
@@ -1967,7 +1986,7 @@
             const admissionDate = document.getElementById('admission-date').value;
             const monthlyFee = parseInt(document.getElementById('student-monthly-fee').value);
             
-            if (!studentClass || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
+            if (!studentClass || !gender || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
                 showToast('সমস্ত প্রয়োজনীয় তথ্য প্রদান করুন', 'error');
                 return;
             }
@@ -1977,6 +1996,7 @@
             const studentData = {
                 userId: currentUser.uid,
                 class: studentClass,
+                gender: gender,
                 name: name,
                 fatherName: fatherName,
                 motherName: motherName,
@@ -1993,6 +2013,8 @@
                 firstExam: false,
                 secondExam: false,
                 thirdExam: false,
+                manualDueMonths: 0,
+                manualDueAmount: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
@@ -2021,6 +2043,7 @@
             
             document.getElementById('edit-student-id').value = student.id;
             document.getElementById('edit-student-class').value = student.class;
+            document.getElementById('edit-student-gender').value = student.gender || '';
             document.getElementById('edit-student-name').value = student.name;
             document.getElementById('edit-father-name').value = student.fatherName;
             document.getElementById('edit-mother-name').value = student.motherName || '';
@@ -2153,6 +2176,7 @@
         function updateStudent() {
             const studentId = document.getElementById('edit-student-id').value;
             const studentClass = document.getElementById('edit-student-class').value;
+            const gender = document.getElementById('edit-student-gender').value;
             const name = document.getElementById('edit-student-name').value;
             const fatherName = document.getElementById('edit-father-name').value;
             const motherName = document.getElementById('edit-mother-name').value;
@@ -2170,7 +2194,7 @@
             const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
             const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
             
-            if (!studentId || !studentClass || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
+            if (!studentId || !studentClass || !gender || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
                 showToast('সমস্ত প্রয়োজনীয় তথ্য প্রদান করুন', 'error');
                 return;
             }
@@ -2183,6 +2207,7 @@
             
             const studentData = {
                 class: studentClass,
+                gender: gender,
                 name: name,
                 fatherName: fatherName,
                 motherName: motherName,
