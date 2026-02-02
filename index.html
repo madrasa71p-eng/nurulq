@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="bn">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>নুরুল কোরআন কওমী মাদ্রাসা</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -23,37 +22,37 @@
             --accent-color: #f8b400;
             --light-color: #faf5e4;
         }
-
+        
         body {
             font-family: 'Hind Siliguri', 'SolaimanLipi', sans-serif;
             background-color: var(--light-color);
             color: #333;
         }
-
+        
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 15px 0;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
+        
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
         }
-
+        
         .current-time {
             font-size: 0.9rem;
             opacity: 0.9;
         }
-
+        
         .main-menu {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             padding: 15px;
         }
-
+        
         .menu-btn {
             background-color: white;
             border: none;
@@ -68,51 +67,45 @@
             align-items: center;
             justify-content: center;
         }
-
+        
         .menu-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
         }
-
+        
         .menu-btn i {
             font-size: 1.8rem;
             margin-bottom: 8px;
             color: var(--primary-color);
         }
-
+        
         .menu-btn span {
             font-size: 0.9rem;
             font-weight: 500;
         }
-
+        
         .page {
             display: none;
             padding: 15px;
             animation: fadeIn 0.3s;
         }
-
+        
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
+        
         .active-page {
             display: block;
         }
-
-        .form-control,
-        .form-select {
+        
+        .form-control, .form-select {
             border-radius: 8px;
             padding: 10px 15px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
         }
-
+        
         .btn-primary {
             background-color: var(--primary-color);
             border: none;
@@ -120,11 +113,11 @@
             border-radius: 8px;
             font-weight: 500;
         }
-
+        
         .btn-primary:hover {
             background-color: var(--secondary-color);
         }
-
+        
         .btn-danger {
             background-color: #e74c3c;
             border: none;
@@ -132,44 +125,43 @@
             border-radius: 8px;
             font-weight: 500;
         }
-
+        
         .student-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 0.9rem;
         }
-
-        .student-table th,
-        .student-table td {
+        
+        .student-table th, .student-table td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
         }
-
+        
         .student-table th {
             background-color: var(--primary-color);
             color: white;
         }
-
+        
         .student-table tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
+        
         .action-btn {
             padding: 5px 10px;
             margin: 0 2px;
             border-radius: 5px;
             font-size: 0.8rem;
         }
-
+        
         .status-badge {
             padding: 3px 8px;
             border-radius: 10px;
             font-size: 0.75rem;
             font-weight: 500;
         }
-
+        
         .online-status {
             position: fixed;
             bottom: 10px;
@@ -179,23 +171,23 @@
             font-size: 0.8rem;
             z-index: 1000;
         }
-
+        
         .online {
             background-color: #2ecc71;
             color: white;
         }
-
+        
         .offline {
             background-color: #e74c3c;
             color: white;
         }
-
+        
         .back-btn {
             margin-bottom: 15px;
             background-color: #95a5a6;
             border: none;
         }
-
+        
         .dashboard-card {
             background-color: white;
             border-radius: 10px;
@@ -203,19 +195,19 @@
             margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
+        
         .dashboard-card h5 {
             color: var(--primary-color);
             font-size: 1rem;
             margin-bottom: 10px;
         }
-
+        
         .dashboard-card p {
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0;
         }
-
+        
         .loader {
             display: none;
             position: fixed;
@@ -228,11 +220,11 @@
             justify-content: center;
             align-items: center;
         }
-
+        
         .loader-content {
             text-align: center;
         }
-
+        
         .spinner {
             width: 3rem;
             height: 3rem;
@@ -242,74 +234,69 @@
             animation: spin 1s linear infinite;
             margin-bottom: 15px;
         }
-
+        
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
         }
-
+        
         .toast-container {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1100;
         }
-
+        
         .toast {
             background-color: var(--primary-color);
             color: white;
             border: none;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
+        
         .search-box {
             margin-bottom: 15px;
         }
-
+        
         .pagination {
             justify-content: center;
             margin-top: 15px;
         }
-
+        
         .page-item.active .page-link {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
         }
-
+        
         .page-link {
             color: var(--primary-color);
         }
-
+        
         .serial-number {
             font-weight: bold;
             color: var(--primary-color);
             text-align: center;
         }
-
+        
         .exam-checkbox {
             width: 20px;
             height: 20px;
             cursor: pointer;
         }
-
+        
         .exam-fee-container {
             display: flex;
             gap: 10px;
             margin-top: 5px;
         }
-
+        
         .exam-fee-item {
             display: flex;
             align-items: center;
             gap: 5px;
             font-size: 0.8rem;
         }
-
+        
         /* New styles for class-wise unpaid sections */
         .class-section {
             margin-bottom: 25px;
@@ -317,7 +304,7 @@
             border-radius: 10px;
             overflow: hidden;
         }
-
+        
         .class-header {
             background-color: var(--primary-color);
             color: white;
@@ -326,17 +313,17 @@
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .class-header h5 {
             margin: 0;
             font-size: 1.1rem;
         }
-
+        
         .class-content {
             padding: 15px;
             background-color: white;
         }
-
+        
         .class-summary {
             background-color: #f8f9fa;
             padding: 10px;
@@ -345,7 +332,7 @@
             display: flex;
             justify-content: space-between;
         }
-
+        
         .download-btn {
             background-color: var(--accent-color);
             border: none;
@@ -355,7 +342,7 @@
             font-size: 0.8rem;
             cursor: pointer;
         }
-
+        
         /* Firebase Login Styles */
         .login-container {
             max-width: 400px;
@@ -365,12 +352,12 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
+        
         .login-logo {
             text-align: center;
             margin-bottom: 20px;
         }
-
+        
         .firebase-status {
             position: fixed;
             bottom: 50px;
@@ -380,40 +367,40 @@
             font-size: 0.8rem;
             z-index: 1000;
         }
-
+        
         .firebase-connected {
             background-color: #2ecc71;
             color: white;
         }
-
+        
         .firebase-disconnected {
             background-color: #e74c3c;
             color: white;
         }
-
+        
         /* Mobile number styles */
         .mobile-number {
             color: var(--primary-color);
             font-size: 0.8rem;
             margin-top: 3px;
         }
-
+        
         .mobile-link {
             color: var(--primary-color);
             text-decoration: none;
             cursor: pointer;
         }
-
+        
         .mobile-link:hover {
             text-decoration: underline;
         }
-
+        
         /* Smart Search Styles */
         .search-container {
             position: relative;
             margin-bottom: 15px;
         }
-
+        
         .search-results {
             position: absolute;
             top: 100%;
@@ -428,35 +415,35 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: none;
         }
-
+        
         .search-result-item {
             padding: 10px 15px;
             cursor: pointer;
             border-bottom: 1px solid #f0f0f0;
         }
-
+        
         .search-result-item:hover {
             background-color: #f5f5f5;
         }
-
+        
         .search-result-item:last-child {
             border-bottom: none;
         }
-
+        
         .student-option {
             display: flex;
             justify-content: space-between;
         }
-
+        
         .student-name {
             font-weight: 500;
         }
-
+        
         .student-father {
             color: #666;
             font-size: 0.9em;
         }
-
+        
         /* Class filter styles */
         .class-filter {
             margin-bottom: 15px;
@@ -465,7 +452,7 @@
             gap: 10px;
             align-items: center;
         }
-
+        
         .class-filter-btn {
             background-color: white;
             border: 1px solid var(--primary-color);
@@ -475,13 +462,12 @@
             font-size: 0.9rem;
             transition: all 0.3s;
         }
-
-        .class-filter-btn:hover,
-        .class-filter-btn.active {
+        
+        .class-filter-btn:hover, .class-filter-btn.active {
             background-color: var(--primary-color);
             color: white;
         }
-
+        
         .class-filter-title {
             font-weight: 600;
             color: var(--secondary-color);
@@ -490,300 +476,300 @@
 
 
 
-        /* Smart Search Styles */
-        .search-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
+            /* Smart Search Styles */
+.search-container {
+    position: relative;
+    margin-bottom: 15px;
+}
 
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 0 0 8px 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+}
 
-        .search-result-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-        }
+.search-result-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
 
-        .search-result-item:hover {
-            background-color: #f5f5f5;
-        }
+.search-result-item:hover {
+    background-color: #f5f5f5;
+}
 
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
+.search-result-item:last-child {
+    border-bottom: none;
+}
 
-        .student-option {
-            display: flex;
-            justify-content: space-between;
-        }
+.student-option {
+    display: flex;
+    justify-content: space-between;
+}
 
-        .student-name {
-            font-weight: 500;
-        }
+.student-name {
+    font-weight: 500;
+}
 
-        .student-father {
-            color: #666;
-            font-size: 0.9em;
-        }
+.student-father {
+    color: #666;
+    font-size: 0.9em;
+}
 
-        /* Fuzzy Search Styles */
-        .match-quality {
-            font-size: 0.7em;
-            padding: 1px 6px;
-            border-radius: 3px;
-            background-color: #e9ecef;
-            margin-top: 2px;
-            display: inline-block;
-        }
+/* Fuzzy Search Styles */
+.match-quality {
+    font-size: 0.7em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background-color: #e9ecef;
+    margin-top: 2px;
+    display: inline-block;
+}
 
-        .exact-match {
-            background-color: #d4edda;
-            color: #155724;
-        }
+.exact-match {
+    background-color: #d4edda;
+    color: #155724;
+}
 
-        .fuzzy-match {
-            background-color: #fff3cd;
-            color: #856404;
-        }
+.fuzzy-match {
+    background-color: #fff3cd;
+    color: #856404;
+}
 
-        /* Receipt System Styles */
-        #receiptModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 10000;
-            overflow-y: auto;
-            padding: 20px;
-        }
+/* Receipt System Styles */
+#receiptModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    overflow-y: auto;
+    padding: 20px;
+}
 
-        #receiptModal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+#receiptModal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .receipt-modal-content {
-            background: white;
-            border-radius: 15px;
-            max-width: 900px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
+.receipt-modal-content {
+    background: white;
+    border-radius: 15px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
 
-        .receipt {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-        }
+.receipt {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
 
-        .receipt-header {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
+.receipt-header {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
 
-        .receipt-header h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+.receipt-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
 
-        .receipt-header p {
-            font-size: 0.95rem;
-            opacity: 0.95;
-            margin: 5px 0;
-        }
+.receipt-header p {
+    font-size: 0.95rem;
+    opacity: 0.95;
+    margin: 5px 0;
+}
 
-        .receipt-body {
-            padding: 30px;
-        }
+.receipt-body {
+    padding: 30px;
+}
 
-        .receipt-number {
-            display: inline-block;
-            background: #fef3c7;
-            color: #92400e;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-        }
+.receipt-number {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
 
-        .receipt-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px dashed #e2e8f0;
-        }
+.receipt-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px dashed #e2e8f0;
+}
 
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
 
-        .info-label {
-            font-size: 0.85rem;
-            color: #718096;
-            margin-bottom: 5px;
-        }
+.info-label {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 5px;
+}
 
-        .info-value {
-            font-size: 1.05rem;
-            color: #2d3748;
-            font-weight: 600;
-        }
+.info-value {
+    font-size: 1.05rem;
+    color: #2d3748;
+    font-weight: 600;
+}
 
-        .payment-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-        }
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
 
-        .payment-table th,
-        .payment-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
+.payment-table th,
+.payment-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
 
-        .payment-table th {
-            background: #f7fafc;
-            color: #2d3748;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+.payment-table th {
+    background: #f7fafc;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
 
-        .payment-table td {
-            color: #4a5568;
-            font-size: 0.95rem;
-        }
+.payment-table td {
+    color: #4a5568;
+    font-size: 0.95rem;
+}
 
-        .total-row {
-            background: #f0fdf4;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #059669;
-        }
+.total-row {
+    background: #f0fdf4;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #059669;
+}
 
-        .receipt-footer {
-            background: #f7fafc;
-            padding: 20px;
-            text-align: center;
-            border-top: 2px solid #e2e8f0;
-        }
+.receipt-footer {
+    background: #f7fafc;
+    padding: 20px;
+    text-align: center;
+    border-top: 2px solid #e2e8f0;
+}
 
-        .thank-you {
-            font-size: 1.2rem;
-            color: #059669;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
+.thank-you {
+    font-size: 1.2rem;
+    color: #059669;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
-        .footer-note {
-            font-size: 0.85rem;
-            color: #718096;
-            font-style: italic;
-        }
+.footer-note {
+    font-size: 0.85rem;
+    color: #718096;
+    font-style: italic;
+}
 
-        .receipt-actions {
-            padding: 20px;
-            background: #f9fafb;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            border-radius: 0 0 15px 15px;
-        }
+.receipt-actions {
+    padding: 20px;
+    background: #f9fafb;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 0 0 15px 15px;
+}
 
-        .receipt-btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+.receipt-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 
-        .btn-download-pdf {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
+.btn-download-pdf {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
 
-        .btn-whatsapp {
-            background: #25D366;
-            color: white;
-        }
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+}
 
-        .btn-close-modal {
-            background: #6b7280;
-            color: white;
-        }
+.btn-close-modal {
+    background: #6b7280;
+    color: white;
+}
 
-        .receipt-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+.receipt-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
-        @media (max-width: 768px) {
-            .receipt-header h2 {
-                font-size: 1.4rem;
-            }
+@media (max-width: 768px) {
+    .receipt-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .receipt-body {
+        padding: 20px;
+    }
+    
+    .receipt-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .receipt-actions {
+        flex-direction: column;
+    }
+    
+    .receipt-btn {
+        width: 100%;
+    }
+}
 
-            .receipt-body {
-                padding: 20px;
-            }
+@media print {
+    #receiptModal {
+        background: white;
+    }
+    
+    .receipt-actions {
+        display: none !important;
+    }
+}
 
-            .receipt-info {
-                grid-template-columns: 1fr;
-            }
-
-            .receipt-actions {
-                flex-direction: column;
-            }
-
-            .receipt-btn {
-                width: 100%;
-            }
-        }
-
-        @media print {
-            #receiptModal {
-                background: white;
-            }
-
-            .receipt-actions {
-                display: none !important;
-            }
-        }
     </style>
 </head>
-
 <body>
     <!-- Firebase Login Page -->
     <div id="login-page" class="page active-page">
@@ -792,7 +778,7 @@
                 <h2 class="logo">🕌 নুরুল কোরআন কওমী মাদ্রাসা</h2>
                 <p>Firebase Login</p>
             </div>
-
+            
             <form id="login-form">
                 <div class="mb-3">
                     <label for="login-email" class="form-label">ইমেইল</label>
@@ -800,15 +786,14 @@
                 </div>
                 <div class="mb-3">
                     <label for="login-password" class="form-label">পাসওয়ার্ড</label>
-                    <input type="password" class="form-control" id="login-password" placeholder="আপনার পাসওয়ার্ড দিন"
-                        required>
+                    <input type="password" class="form-control" id="login-password" placeholder="আপনার পাসওয়ার্ড দিন" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mb-3">লগইন</button>
                 <div class="text-center">
                     <p>অ্যাকাউন্ট নেই? <a href="#" onclick="showRegisterForm()">রেজিস্টার করুন</a></p>
                 </div>
             </form>
-
+            
             <form id="register-form" style="display: none;">
                 <div class="mb-3">
                     <label for="register-email" class="form-label">ইমেইল</label>
@@ -816,20 +801,18 @@
                 </div>
                 <div class="mb-3">
                     <label for="register-password" class="form-label">পাসওয়ার্ড</label>
-                    <input type="password" class="form-control" id="register-password"
-                        placeholder="পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)" required>
+                    <input type="password" class="form-control" id="register-password" placeholder="পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)" required>
                 </div>
                 <div class="mb-3">
                     <label for="confirm-password" class="form-label">পাসওয়ার্ড নিশ্চিত করুন</label>
-                    <input type="password" class="form-control" id="confirm-password" placeholder="পাসওয়ার্ড আবার দিন"
-                        required>
+                    <input type="password" class="form-control" id="confirm-password" placeholder="পাসওয়ার্ড আবার দিন" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mb-3">রেজিস্টার</button>
                 <div class="text-center">
                     <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="#" onclick="showLoginForm()">লগইন করুন</a></p>
                 </div>
             </form>
-
+            
             <div id="login-message" class="alert alert-danger mt-3" style="display: none;"></div>
         </div>
     </div>
@@ -844,8 +827,7 @@
 
     <!-- Toast Notifications -->
     <div class="toast-container">
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true"
-            data-bs-delay="3000">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
             <div class="toast-body">
                 <span id="toast-message">Message here</span>
             </div>
@@ -915,10 +897,9 @@
 
         <!-- Add Student Page -->
         <div id="add-student-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>ছাত্র/ছাত্রী যোগ করুন</h4>
-
+            
             <form id="add-student-form">
                 <select class="form-select" id="student-class" required>
                     <option value="">ক্লাস নির্বাচন করুন</option>
@@ -928,33 +909,31 @@
                     <option value="তৃতীয় জামাত">তৃতীয় জামাত</option>
                     <option value="হিফজ বিভাগ">হিফজ বিভাগ</option>
                 </select>
-
+                
                 <input type="text" class="form-control" id="student-name" placeholder="ছাত্র/ছাত্রীর নাম" required>
                 <input type="text" class="form-control" id="father-name" placeholder="পিতার নাম" required>
                 <input type="text" class="form-control" id="mother-name" placeholder="মাতার নাম">
                 <input type="tel" class="form-control" id="mobile-number" placeholder="মোবাইল নম্বর" required>
                 <textarea class="form-control" id="address" placeholder="ঠিকানা" rows="2"></textarea>
                 <input type="date" class="form-control" id="admission-date" required>
-
+                
                 <div class="mb-3">
                     <label for="student-monthly-fee" class="form-label">মাসিক বেতন (টাকা)</label>
-                    <input type="number" class="form-control" id="student-monthly-fee" placeholder="মাসিক বেতন"
-                        required>
+                    <input type="number" class="form-control" id="student-monthly-fee" placeholder="মাসিক বেতন" required>
                 </div>
-
+                
                 <button type="submit" class="btn btn-primary w-100">সংরক্ষণ করুন</button>
             </form>
         </div>
 
         <!-- Edit Student Page -->
         <div id="edit-student-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('student-list-page', currentClass)"><i
-                    class="fas fa-arrow-left"></i> Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('student-list-page', currentClass)"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>ছাত্র/ছাত্রী সম্পাদনা করুন</h4>
-
+            
             <form id="edit-student-form">
                 <input type="hidden" id="edit-student-id">
-
+                
                 <select class="form-select" id="edit-student-class" required>
                     <option value="">ক্লাস নির্বাচন করুন</option>
                     <option value="শিশু জামাত">শিশু জামাত</option>
@@ -963,19 +942,19 @@
                     <option value="তৃতীয় জামাত">তৃতীয় জামাত</option>
                     <option value="হিফজ বিভাগ">হিফজ বিভাগ</option>
                 </select>
-
+                
                 <input type="text" class="form-control" id="edit-student-name" placeholder="ছাত্র/ছাত্রীর নাম" required>
                 <input type="text" class="form-control" id="edit-father-name" placeholder="পিতার নাম" required>
                 <input type="text" class="form-control" id="edit-mother-name" placeholder="মাতার নাম">
                 <input type="tel" class="form-control" id="edit-mobile-number" placeholder="মোবাইল নম্বর" required>
                 <textarea class="form-control" id="edit-address" placeholder="ঠিকানা" rows="2"></textarea>
                 <input type="date" class="form-control" id="edit-admission-date" required>
-
+                
                 <div class="mb-3">
                     <label for="edit-monthly-fee" class="form-label">মাসিক বেতন (টাকা)</label>
                     <input type="number" class="form-control" id="edit-monthly-fee" placeholder="মাসিক বেতন" required>
                 </div>
-
+                
                 <div class="row mt-3">
                     <div class="col-md-4">
                         <div class="form-group">
@@ -986,8 +965,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="edit-due-months">বাকি মাস (অটো)</label>
-                            <input type="number" class="form-control" id="edit-due-months" min="0" readonly
-                                style="background-color: #f0f0f0;">
+                            <input type="number" class="form-control" id="edit-due-months" min="0" readonly style="background-color: #f0f0f0;">
                             <small class="text-muted">স্বয়ংক্রিয় গণনা (৩০ দিন হিসাবে)</small>
                         </div>
                     </div>
@@ -998,7 +976,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -1009,13 +987,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="edit-total-due">মোট বাকি টাকা</label>
-                            <input type="number" class="form-control" id="edit-total-due" min="0" readonly
-                                style="background-color: #f0f0f0; transition: background-color 0.5s;">
+                            <input type="number" class="form-control" id="edit-total-due" min="0" readonly style="background-color: #f0f0f0; transition: background-color 0.5s;">
                             <small class="text-muted">অটো + ম্যানুয়াল বকেয়া</small>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="alert alert-warning mt-3">
                     <h6 class="mb-3"><i class="fas fa-hand-holding-usd"></i> আগের/অতিরিক্ত বকেয়া (ম্যানুয়াল)</h6>
                     <div class="row">
@@ -1034,36 +1011,30 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Quick Action Buttons -->
                     <div class="mt-3">
                         <label class="d-block mb-2"><strong>দ্রুত সমন্বয়:</strong></label>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-success"
-                                onclick="adjustManualDue(-1, -500)">-১ মাস</button>
-                            <button type="button" class="btn btn-sm btn-outline-success"
-                                onclick="adjustManualDue(-2, -1000)">-২ মাস</button>
-                            <button type="button" class="btn btn-sm btn-outline-success"
-                                onclick="adjustManualDue(-3, -1500)">-৩ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="adjustManualDue(-1, -500)">-১ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="adjustManualDue(-2, -1000)">-২ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="adjustManualDue(-3, -1500)">-৩ মাস</button>
                         </div>
                         <div class="btn-group ms-2" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-danger"
-                                onclick="adjustManualDue(1, 500)">+১ মাস</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger"
-                                onclick="adjustManualDue(2, 1000)">+২ মাস</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger"
-                                onclick="adjustManualDue(3, 1500)">+৩ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="adjustManualDue(1, 500)">+১ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="adjustManualDue(2, 1000)">+২ মাস</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="adjustManualDue(3, 1500)">+৩ মাস</button>
                         </div>
                         <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="clearManualDue()">
                             <i class="fas fa-eraser"></i> সব মুছুন
                         </button>
                     </div>
-
+                    
                     <div class="alert alert-info mt-3 mb-0">
                         <strong>📝 নোট:</strong> মোট বকেয়া = অটোমেটিক বকেয়া + আগের বকেয়া (ম্যানুয়াল)
                     </div>
                 </div>
-
+                
                 <div class="mt-3">
                     <h5>পরীক্ষার ফি স্ট্যাটাস</h5>
                     <div class="form-check">
@@ -1085,21 +1056,20 @@
                         </label>
                     </div>
                 </div>
-
+                
                 <button type="submit" class="btn btn-primary w-100 mt-3">আপডেট করুন</button>
             </form>
         </div>
 
         <!-- Student List Page -->
         <div id="student-list-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4 id="student-list-title">ছাত্র তালিকা</h4>
-
+            
             <div class="search-box">
                 <input type="text" class="form-control" id="student-search" placeholder="ছাত্র খুঁজুন...">
             </div>
-
+            
             <div class="table-responsive">
                 <table class="student-table">
                     <thead>
@@ -1120,7 +1090,7 @@
                     </tbody>
                 </table>
             </div>
-
+            
             <nav aria-label="Page navigation">
                 <ul class="pagination" id="student-pagination">
                     <!-- Pagination will be loaded here -->
@@ -1130,23 +1100,20 @@
 
         <!-- Fee Payment Page -->
         <div id="fee-payment-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>বেতন সংগ্রহ</h4>
-
+            
             <!-- Auto Due System Info Card -->
             <div class="alert alert-info mb-3">
-                <h6 class="mb-2"><i class="fas fa-info-circle"></i> <strong>স্বয়ংক্রিয় বকেয়া বেতন সিস্টেম (Hriday
-                        Edition)</strong></h6>
+                <h6 class="mb-2"><i class="fas fa-info-circle"></i> <strong>স্বয়ংক্রিয় বকেয়া বেতন সিস্টেম (Hriday Edition)</strong></h6>
                 <ul class="mb-0" style="font-size: 0.85rem; padding-left: 20px;">
-                    <li><strong>৩০ দিনের চক্র:</strong> ভর্তি তারিখ থেকে প্রতি ৩০ দিন পর পর ১ মাস বকেয়া
-                        স্বয়ংক্রিয়ভাবে যোগ হয়</li>
+                    <li><strong>৩০ দিনের চক্র:</strong> ভর্তি তারিখ থেকে প্রতি ৩০ দিন পর পর ১ মাস বকেয়া স্বয়ংক্রিয়ভাবে যোগ হয়</li>
                     <li><strong>অগ্রিম বেতন:</strong> বকেয়ার বেশি টাকা দিলে অগ্রিম হিসেবে সংরক্ষিত হবে</li>
                     <li><strong>ম্যানুয়াল বকেয়া:</strong> পুরনো বকেয়া Edit থেকে যোগ করতে পারবেন</li>
                     <li><strong>স্বয়ংক্রিয় আপডেট:</strong> প্রতি ৩০ মিনিটে সিস্টেম স্বয়ংক্রিয়ভাবে আপডেট হয়</li>
                 </ul>
             </div>
-
+            
             <form id="fee-payment-form">
                 <select class="form-select" id="fee-class" required>
                     <option value="">ক্লাস নির্বাচন করুন</option>
@@ -1156,28 +1123,28 @@
                     <option value="তৃতীয় জামাত">তৃতীয় জামাত</option>
                     <option value="হিফজ বিভাগ">হিফজ বিভাগ</option>
                 </select>
-
+                
                 <div class="search-container">
                     <input type="text" class="form-control" id="student-search-input" placeholder="ছাত্র খুঁজুন...">
                     <div class="search-results" id="search-results"></div>
                 </div>
-
+                
                 <select class="form-select" id="fee-student" required>
                     <option value="">ছাত্র নির্বাচন করুন</option>
                 </select>
-
+                
                 <input type="number" class="form-control" id="monthly-fee" placeholder="মাসিক বেতন" readonly>
                 <input type="number" class="form-control" id="paid-months" placeholder="জমা মাসের সংখ্যা" required>
                 <input type="number" class="form-control" id="paid-amount" placeholder="জমা টাকার পরিমাণ" required>
                 <input type="number" class="form-control" id="due-amount" placeholder="বাকি টাকা" readonly>
-
+                
                 <div class="form-check mb-2">
                     <input class="form-check-input" type="checkbox" id="exam-fee-checkbox">
                     <label class="form-check-label" for="exam-fee-checkbox">
                         পরীক্ষার ফি যোগ করুন
                     </label>
                 </div>
-
+                
                 <div id="exam-fee-container" style="display: none;">
                     <div class="row mb-2">
                         <div class="col-4">
@@ -1207,7 +1174,7 @@
                     </div>
                     <input type="number" class="form-control" id="exam-fee-amount" placeholder="পরীক্ষার ফির পরিমাণ">
                 </div>
-
+                
                 <select class="form-select" id="payment-method" required>
                     <option value="">পেমেন্ট পদ্ধতি</option>
                     <option value="Cash">নগদ</option>
@@ -1215,78 +1182,74 @@
                     <option value="Bank">ব্যাংক</option>
                     <option value="Other">অন্যান্য</option>
                 </select>
-
+                
                 <button type="submit" class="btn btn-primary w-100">বেতন জমা দিন</button>
             </form>
         </div>
 
         <!-- Unpaid Students Page -->
         <div id="unpaid-students-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>বেতন বাকি আছে এমন ছাত্র</h4>
-
+            
             <!-- Class Filter Buttons -->
             <div class="class-filter">
                 <span class="class-filter-title">জামাত ফিল্টার:</span>
                 <button class="class-filter-btn active" onclick="filterUnpaidStudents('all')">সকল</button>
                 <button class="class-filter-btn" onclick="filterUnpaidStudents('শিশু জামাত')">শিশু জামাত</button>
                 <button class="class-filter-btn" onclick="filterUnpaidStudents('প্রথম জামাত')">প্রথম জামাত</button>
-                <button class="class-filter-btn" onclick="filterUnpaidStudents('দ্বিতীয় জামাত')">দ্বিতীয়
-                    জামাত</button>
+                <button class="class-filter-btn" onclick="filterUnpaidStudents('দ্বিতীয় জামাত')">দ্বিতীয় জামাত</button>
                 <button class="class-filter-btn" onclick="filterUnpaidStudents('তৃতীয় জামাত')">তৃতীয় জামাত</button>
                 <button class="class-filter-btn" onclick="filterUnpaidStudents('হিফজ বিভাগ')">হিফজ বিভাগ</button>
             </div>
-
+            
             <div id="unpaid-students-container">
                 <!-- Class-wise unpaid sections will be loaded here -->
             </div>
         </div>
 
-        <!-- Today's Payments Page -->
-        <div id="today-payments-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
-            <h4>আজকের বেতনদাতা</h4>
-            <p id="today-date"></p>
-
-            <div class="d-flex justify-content-between mb-3">
-                <div>
-                    <span class="badge bg-primary">মোট আদায়: <span id="today-total-amount">0</span>৳</span>
-                    <span class="badge bg-success ms-2">মোট ছাত্র: <span id="today-total-students">0</span> জন</span>
-                </div>
-                <button class="btn btn-danger btn-sm" onclick="clearTodayPayments()">
-                    <i class="fas fa-trash"></i> আজকের ডেটা ডিলিট
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="student-table">
-                    <thead>
-                        <tr>
-                            <th>ক্রমিক</th>
-                            <th>নাম</th>
-                            <th>জামাত</th>
-                            <th>টাকা</th>
-                            <th>কয় মাস</th>
-                            <th>সময়</th>
-                            <th>পদ্ধতি</th>
-                            <th>অ্যাকশন</th>
-                        </tr>
-                    </thead>
-                    <tbody id="today-payments-body">
-                        <!-- Today's payments will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+       <!-- Today's Payments Page -->
+<div id="today-payments-page" class="page">
+    <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
+    <h4>আজকের বেতনদাতা</h4>
+    <p id="today-date"></p>
+    
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <span class="badge bg-primary">মোট আদায়: <span id="today-total-amount">0</span>৳</span>
+            <span class="badge bg-success ms-2">মোট ছাত্র: <span id="today-total-students">0</span> জন</span>
         </div>
+        <button class="btn btn-danger btn-sm" onclick="clearTodayPayments()">
+            <i class="fas fa-trash"></i> আজকের ডেটা ডিলিট
+        </button>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>ক্রমিক</th>
+                    <th>নাম</th>
+                    <th>জামাত</th>
+                    <th>টাকা</th>
+                    <th>কয় মাস</th>
+                    <th>সময়</th>
+                    <th>পদ্ধতি</th>
+                    <th>অ্যাকশন</th>
+                </tr>
+            </thead>
+            <tbody id="today-payments-body">
+                <!-- Today's payments will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+</div>
 
         <!-- Dashboard Page -->
         <div id="dashboard-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>ড্যাশবোর্ড</h4>
-
+            
             <div class="row">
                 <div class="col-md-6">
                     <div class="dashboard-card">
@@ -1337,21 +1300,20 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-calendar-alt"></i> মাসিক কালেকশন (জামাত অনুযায়ী)</h5>
-                <p class="text-muted" style="font-size: 0.9rem;">বর্তমান মাস: <span id="current-month-display"></span> |
-                    পরবর্তী রিসেট: <span id="next-reset-date"></span></p>
+                <p class="text-muted" style="font-size: 0.9rem;">বর্তমান মাস: <span id="current-month-display"></span> | পরবর্তী রিসেট: <span id="next-reset-date"></span></p>
                 <div id="monthly-collection-by-class">
                     <!-- Monthly collections will be loaded here -->
                 </div>
             </div>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-chart-pie"></i> ক্লাস অনুযায়ী ছাত্র সংখ্যা</h5>
                 <canvas id="class-chart" height="200"></canvas>
             </div>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-chart-line"></i> সাম্প্রতিক বেতন আদায়</h5>
                 <canvas id="payment-chart" height="200"></canvas>
@@ -1360,29 +1322,28 @@
 
         <!-- Settings Page -->
         <div id="settings-page" class="page">
-            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i>
-                Back</button>
+            <button class="btn btn-secondary back-btn" onclick="showPage('home-page')"><i class="fas fa-arrow-left"></i> Back</button>
             <h4>সেটিংস / ব্যাকআপ</h4>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-download"></i> ডেটা ব্যাকআপ</h5>
                 <p>আপনার সমস্ত ডেটা JSON ফাইলে ডাউনলোড করুন</p>
                 <button class="btn btn-primary" onclick="downloadBackup()">ডেটা ডাউনলোড করুন</button>
             </div>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-upload"></i> ডেটা রিস্টোর</h5>
                 <p>ব্যাকআপ থেকে ডেটা রিস্টোর করুন</p>
                 <input type="file" class="form-control mb-2" id="backup-file" accept=".json">
                 <button class="btn btn-warning" onclick="restoreBackup()">ডেটা রিস্টোর করুন</button>
             </div>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-trash"></i> সমস্ত ডেটা মুছুন</h5>
                 <p>সতর্কতা: এই অপারেশনটি বিপরীতযোগ্য নয়। সমস্ত ডেটা স্থায়ীভাবে মুছে যাবে।</p>
                 <button class="btn btn-danger" onclick="confirmDeleteAllData()">সমস্ত ডেটা মুছুন</button>
             </div>
-
+            
             <div class="dashboard-card">
                 <h5><i class="fas fa-cog"></i> অ্যাপ সেটিংস</h5>
                 <div class="form-check form-switch mb-2">
@@ -1495,7 +1456,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -1529,10 +1490,10 @@
         let todayPayments = [];
         let currentPage = "home-page";
         let currentPageTitle = "";
-
+        
         // Auto-update interval (check dues every 5 minutes)
         let autoUpdateInterval = null;
-
+        
         // DOM elements
         const loginPage = document.getElementById('login-page');
         const mainApp = document.getElementById('main-app');
@@ -1546,10 +1507,10 @@
         const bootstrapToast = new bootstrap.Toast(toast);
 
         // Initialize the app
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             updateCurrentTime();
             setInterval(updateCurrentTime, 1000);
-
+            
             // Check authentication state
             auth.onAuthStateChanged(user => {
                 if (user) {
@@ -1565,12 +1526,12 @@
                     mainApp.style.display = 'none';
                 }
             });
-
+            
             // Check online status
             window.addEventListener('online', updateOnlineStatus);
             window.addEventListener('offline', updateOnlineStatus);
             updateOnlineStatus();
-
+            
             // Check Firebase connection
             db.enableNetwork().then(() => {
                 firebaseStatus.textContent = "Firebase: Connected";
@@ -1579,26 +1540,35 @@
                 firebaseStatus.textContent = "Firebase: Disconnected";
                 firebaseStatus.className = "firebase-status firebase-disconnected";
             });
-
+            
             // Setup event listeners
             setupEventListeners();
-
-            // Handle browser back/forward buttons
-            window.addEventListener('popstate', function (event) {
-                if (event.state && event.state.pageId) {
-                    showPage(event.state.pageId, event.state.title, false);
-                } else {
-                    showPage('home-page', '', false);
-                }
-            });
         });
+        function setupEventListeners() {
+    // ... existing code ...
+    
+    // Class selection for fee payment - Clear search when class changes
+    document.getElementById('fee-class').addEventListener('change', function() {
+        loadStudentsForFeePayment(this.value);
+        // Clear search input and results when class changes
+        document.getElementById('student-search-input').value = '';
+        document.getElementById('search-results').style.display = 'none';
+    });
+    
+    // Student search for fee payment - Use advanced search
+    document.getElementById('student-search-input').addEventListener('input', function() {
+        searchStudentsForFeePayment(this.value);
+    });
+    
+    // ... existing code ...
+}
         // Update current time
         function updateCurrentTime() {
             const now = new Date();
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
@@ -1642,26 +1612,22 @@
         }
 
         // Show page
-        function showPage(pageId, title = '', pushState = true) {
+        function showPage(pageId, title = '') {
             // Hide all pages
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active-page');
             });
-
+            
             // Show selected page
-            const pageElement = document.getElementById(pageId);
-            if (pageElement) {
-                pageElement.classList.add('active-page');
-            }
-
+            document.getElementById(pageId).classList.add('active-page');
             currentPage = pageId;
             currentPageTitle = title;
-
+            
             // Update page title if provided
             if (title && document.getElementById('student-list-title')) {
                 document.getElementById('student-list-title').textContent = title + ' - ছাত্র তালিকা';
             }
-
+            
             // Load data for specific pages
             if (pageId === 'student-list-page' && title) {
                 currentClass = title;
@@ -1673,112 +1639,107 @@
             } else if (pageId === 'unpaid-students-page') {
                 loadUnpaidStudents();
             }
-
-            // Push state for browser history management
-            if (pushState) {
-                history.pushState({ pageId, title }, null, "");
-            }
         }
 
         // Setup event listeners
         function setupEventListeners() {
             // Login form
-            document.getElementById('login-form').addEventListener('submit', function (e) {
+            document.getElementById('login-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 loginUser(email, password);
             });
-
+            
             // Register form
-            document.getElementById('register-form').addEventListener('submit', function (e) {
+            document.getElementById('register-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const email = document.getElementById('register-email').value;
                 const password = document.getElementById('register-password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
-
+                
                 if (password !== confirmPassword) {
                     showMessage('পাসওয়ার্ড মেলেনি', 'error');
                     return;
                 }
-
+                
                 registerUser(email, password);
             });
-
+            
             // Add student form
-            document.getElementById('add-student-form').addEventListener('submit', function (e) {
+            document.getElementById('add-student-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addStudent();
             });
-
+            
             // Edit student form
-            document.getElementById('edit-student-form').addEventListener('submit', function (e) {
+            document.getElementById('edit-student-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 updateStudent();
             });
-
+            
             // Fee payment form
-            document.getElementById('fee-payment-form').addEventListener('submit', function (e) {
+            document.getElementById('fee-payment-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 processFeePayment();
             });
-
+            
             // Student search
-            document.getElementById('student-search').addEventListener('input', function () {
+            document.getElementById('student-search').addEventListener('input', function() {
                 filterStudents(this.value);
             });
-
+            
             // Class selection for fee payment
-            document.getElementById('fee-class').addEventListener('change', function () {
+            document.getElementById('fee-class').addEventListener('change', function() {
                 loadStudentsForFeePayment(this.value);
             });
-
+            
             // Student selection for fee payment
-            document.getElementById('fee-student').addEventListener('change', function () {
+            document.getElementById('fee-student').addEventListener('change', function() {
                 loadStudentFeeInfo(this.value);
             });
-
+            
             // Exam fee checkbox
-            document.getElementById('exam-fee-checkbox').addEventListener('change', function () {
+            document.getElementById('exam-fee-checkbox').addEventListener('change', function() {
                 document.getElementById('exam-fee-container').style.display = this.checked ? 'block' : 'none';
             });
-
+            
             // Student search for fee payment
-            document.getElementById('student-search-input').addEventListener('input', function () {
+            document.getElementById('student-search-input').addEventListener('input', function() {
                 searchStudentsForFeePayment(this.value);
             });
-
+            
             // Paid months input
-            document.getElementById('paid-months').addEventListener('input', function () {
+            document.getElementById('paid-months').addEventListener('input', function() {
                 calculatePaymentAmount();
             });
-
+            
             // Manual due fields - Update total when changed
-            document.getElementById('edit-manual-due-months').addEventListener('input', function () {
+            document.getElementById('edit-manual-due-months').addEventListener('input', function() {
                 updateTotalDueDisplay();
             });
-
-            document.getElementById('edit-manual-due-amount').addEventListener('input', function () {
+            
+            document.getElementById('edit-manual-due-amount').addEventListener('input', function() {
                 updateTotalDueDisplay();
             });
-
+            
             // Admission date change - Recalculate automatic dues
-            document.getElementById('edit-admission-date').addEventListener('change', function () {
+            document.getElementById('edit-admission-date').addEventListener('change', function() {
                 recalculateEditFormDues();
             });
-
+            
             // Monthly fee change - Recalculate dues
-            document.getElementById('edit-monthly-fee').addEventListener('input', function () {
+            document.getElementById('edit-monthly-fee').addEventListener('input', function() {
                 recalculateEditFormDues();
             });
-
+            
             // Paid months change - Recalculate dues
-            document.getElementById('edit-paid-months').addEventListener('input', function () {
+            document.getElementById('edit-paid-months').addEventListener('input', function() {
                 recalculateEditFormDues();
             });
-
+            
             // Advance months change - Recalculate dues
-            document.getElementById('edit-advance-months').addEventListener('input', function () {
+            document.getElementById('edit-advance-months').addEventListener('input', function() {
                 recalculateEditFormDues();
             });
         }
@@ -1843,7 +1804,7 @@
             }).then(() => {
                 hideLoader();
                 showToast('ডেটা সফলভাবে লোড হয়েছে!', 'success');
-
+                
                 // Initialize automatic due system (Hriday Edition)
                 initializeAutoDueSystem();
             }).catch(error => {
@@ -1883,14 +1844,14 @@
         function loadStudentsByClass(className) {
             showLoader();
             const filteredStudents = students.filter(student => student.class === className);
-
+            
             // Sort by admission date (oldest first)
             filteredStudents.sort((a, b) => {
                 const dateA = new Date(a.admissionDate || '9999-12-31');
                 const dateB = new Date(b.admissionDate || '9999-12-31');
                 return dateA - dateB;
             });
-
+            
             displayStudents(filteredStudents);
             hideLoader();
         }
@@ -1898,42 +1859,42 @@
         function displayStudents(studentsList) {
             const studentListBody = document.getElementById('student-list-body');
             studentListBody.innerHTML = '';
-
+            
             if (studentsList.length === 0) {
                 studentListBody.innerHTML = '<tr><td colspan="9" class="text-center">কোনো ছাত্র পাওয়া যায়নি</td></tr>';
                 return;
             }
-
+            
             studentsList.forEach((student, index) => {
                 const row = document.createElement('tr');
-
+                
                 // Calculate exam fee status
                 const examFeeStatus = [];
                 if (student.firstExam) examFeeStatus.push('প্রথম');
                 if (student.secondExam) examFeeStatus.push('দ্বিতীয়');
                 if (student.thirdExam) examFeeStatus.push('তৃতীয়');
-
+                
                 // Calculate total due (including manual dues)
                 const autoDueMonths = student.dueMonths || 0;
                 const manualDueMonths = student.manualDueMonths || 0;
                 const totalDueMonths = autoDueMonths + manualDueMonths;
-
+                
                 const autoDueAmount = autoDueMonths * student.monthlyFee;
                 const manualDueAmount = student.manualDueAmount || 0;
                 const totalDue = autoDueAmount + manualDueAmount;
-
+                
                 // Format total due months display
                 let dueMonthsDisplay = `${totalDueMonths}`;
                 if (manualDueMonths > 0) {
                     dueMonthsDisplay += ` <span class="badge bg-warning" style="font-size: 0.65rem;">+${manualDueMonths}</span>`;
                 }
-
+                
                 // Format total due display
                 let totalDueDisplay = `${totalDue}৳`;
                 if (manualDueAmount > 0) {
                     totalDueDisplay += ` <span class="badge bg-warning" style="font-size: 0.7rem;">+${manualDueAmount}৳</span>`;
                 }
-
+                
                 row.innerHTML = `
                     <td class="serial-number">${index + 1}</td>
                     <td>
@@ -1957,7 +1918,7 @@
                         </button>
                     </td>
                 `;
-
+                
                 studentListBody.appendChild(row);
             });
         }
@@ -1965,9 +1926,9 @@
         function filterStudents(searchTerm) {
             // শুধুমাত্র বর্তমান ক্লাসের ছাত্রদের মধ্যে সার্চ করবে
             const classStudents = students.filter(student => student.class === currentClass);
-
+            
             let filteredStudents;
-
+            
             if (!searchTerm || searchTerm.trim() === '') {
                 // যদি সার্চ টার্ম খালি থাকে, সব ছাত্র দেখাও
                 filteredStudents = classStudents;
@@ -1981,18 +1942,18 @@
                     ignoreLocation: true,
                     minMatchCharLength: 1
                 });
-
+                
                 const fuseResults = fuse.search(searchTerm);
                 filteredStudents = fuseResults.map(result => result.item);
             }
-
+            
             // Sort by admission date (oldest first)
             filteredStudents.sort((a, b) => {
                 const dateA = new Date(a.admissionDate || '9999-12-31');
                 const dateB = new Date(b.admissionDate || '9999-12-31');
                 return dateA - dateB;
             });
-
+            
             displayStudents(filteredStudents);
         }
 
@@ -2005,14 +1966,14 @@
             const address = document.getElementById('address').value;
             const admissionDate = document.getElementById('admission-date').value;
             const monthlyFee = parseInt(document.getElementById('student-monthly-fee').value);
-
+            
             if (!studentClass || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
                 showToast('সমস্ত প্রয়োজনীয় তথ্য প্রদান করুন', 'error');
                 return;
             }
-
+            
             showLoader();
-
+            
             const studentData = {
                 userId: currentUser.uid,
                 class: studentClass,
@@ -2034,13 +1995,13 @@
                 thirdExam: false,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-
+            
             db.collection('students').add(studentData)
                 .then((docRef) => {
                     hideLoader();
                     showToast('ছাত্র সফলভাবে যোগ করা হয়েছে!', 'success');
                     document.getElementById('add-student-form').reset();
-
+                    
                     // Reload students
                     loadStudents().then(() => {
                         if (currentPage === 'student-list-page' && currentClass === studentClass) {
@@ -2057,7 +2018,7 @@
         function editStudent(studentId) {
             const student = students.find(s => s.id === studentId);
             if (!student) return;
-
+            
             document.getElementById('edit-student-id').value = student.id;
             document.getElementById('edit-student-class').value = student.class;
             document.getElementById('edit-student-name').value = student.name;
@@ -2073,25 +2034,25 @@
             document.getElementById('edit-first-exam').checked = student.firstExam || false;
             document.getElementById('edit-second-exam').checked = student.secondExam || false;
             document.getElementById('edit-third-exam').checked = student.thirdExam || false;
-
+            
             // Load manual due fields
             document.getElementById('edit-manual-due-months').value = student.manualDueMonths || 0;
             document.getElementById('edit-manual-due-amount').value = student.manualDueAmount || 0;
-
+            
             // Recalculate automatic due months based on admission date
             const dueInfo = calculateStudentDues(student);
             document.getElementById('edit-due-months').value = dueInfo.autoDueMonths;
-
+            
             // Calculate and display total due (auto + manual)
             const totalDue = (dueInfo.autoDueMonths * student.monthlyFee) + (student.manualDueAmount || 0);
             document.getElementById('edit-total-due').value = totalDue;
-
+            
             // Update total due display
             updateTotalDueDisplay();
-
+            
             showPage('edit-student-page');
         }
-
+        
         // Recalculate dues in edit form based on admission date (30-day cycle)
         function recalculateEditFormDues() {
             const admissionDate = document.getElementById('edit-admission-date').value;
@@ -2100,11 +2061,11 @@
             const advanceMonths = parseInt(document.getElementById('edit-advance-months').value) || 0;
             const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
             const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
-
+            
             if (!admissionDate || !monthlyFee) {
                 return;
             }
-
+            
             // Create a temporary student object for calculation
             const tempStudent = {
                 admissionDate: admissionDate,
@@ -2114,16 +2075,16 @@
                 manualDueMonths: manualDueMonths,
                 manualDueAmount: manualDueAmount
             };
-
+            
             // Calculate dues using the automatic system
             const dueInfo = calculateStudentDues(tempStudent);
-
+            
             // Update the automatic due months field
             document.getElementById('edit-due-months').value = dueInfo.autoDueMonths;
-
+            
             // Update total due display
             updateTotalDueDisplay();
-
+            
             // Visual feedback
             const dueMonthsField = document.getElementById('edit-due-months');
             dueMonthsField.style.backgroundColor = '#fff3cd';
@@ -2131,24 +2092,24 @@
                 dueMonthsField.style.backgroundColor = '#f0f0f0';
             }, 500);
         }
-
+        
         // Update total due display when manual dues change
         function updateTotalDueDisplay() {
             const autoDueMonths = parseInt(document.getElementById('edit-due-months').value) || 0;
             const monthlyFee = parseInt(document.getElementById('edit-monthly-fee').value) || 0;
             const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
             const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
-
+            
             // Calculate automatic due amount
             const autoDueAmount = autoDueMonths * monthlyFee;
-
+            
             // Calculate total
             const totalDueMonths = autoDueMonths + manualDueMonths;
             const totalDueAmount = autoDueAmount + manualDueAmount;
-
+            
             // Update the display field
             document.getElementById('edit-total-due').value = totalDueAmount;
-
+            
             // Show a visual indicator of the calculation
             const totalDueField = document.getElementById('edit-total-due');
             totalDueField.style.backgroundColor = '#e8f5e9';
@@ -2156,23 +2117,23 @@
                 totalDueField.style.backgroundColor = '#f0f0f0';
             }, 500);
         }
-
+        
         // Quick adjust manual due (increase or decrease)
         function adjustManualDue(months, amount) {
             const currentMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
             const currentAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
-
+            
             // Calculate new values
             const newMonths = Math.max(0, currentMonths + months);
             const newAmount = Math.max(0, currentAmount + amount);
-
+            
             // Update fields
             document.getElementById('edit-manual-due-months').value = newMonths;
             document.getElementById('edit-manual-due-amount').value = newAmount;
-
+            
             // Update total display
             updateTotalDueDisplay();
-
+            
             // Show toast
             if (months < 0) {
                 showToast(`${Math.abs(months)} মাস বকেয়া কমানো হয়েছে`, 'success');
@@ -2180,7 +2141,7 @@
                 showToast(`${months} মাস বকেয়া যোগ করা হয়েছে`, 'info');
             }
         }
-
+        
         // Clear all manual dues
         function clearManualDue() {
             document.getElementById('edit-manual-due-months').value = 0;
@@ -2208,18 +2169,18 @@
             const thirdExam = document.getElementById('edit-third-exam').checked;
             const manualDueMonths = parseInt(document.getElementById('edit-manual-due-months').value) || 0;
             const manualDueAmount = parseInt(document.getElementById('edit-manual-due-amount').value) || 0;
-
+            
             if (!studentId || !studentClass || !name || !fatherName || !mobile || !admissionDate || !monthlyFee) {
                 showToast('সমস্ত প্রয়োজনীয় তথ্য প্রদান করুন', 'error');
                 return;
             }
-
+            
             showLoader();
-
+            
             // Calculate total due correctly (automatic + manual)
             const autoDueAmount = dueMonths * monthlyFee;
             const totalDue = autoDueAmount + manualDueAmount;
-
+            
             const studentData = {
                 class: studentClass,
                 name: name,
@@ -2242,12 +2203,12 @@
                 lastDueUpdate: new Date().toISOString().split('T')[0],
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-
+            
             db.collection('students').doc(studentId).update(studentData)
                 .then(() => {
                     hideLoader();
                     showToast('ছাত্রের তথ্য সফলভাবে আপডেট করা হয়েছে!', 'success');
-
+                    
                     // Reload students
                     loadStudents().then(() => {
                         showPage('student-list-page', currentClass);
@@ -2263,14 +2224,14 @@
             if (!confirm('আপনি কি নিশ্চিত যে আপনি এই ছাত্রকে মুছতে চান?')) {
                 return;
             }
-
+            
             showLoader();
-
+            
             db.collection('students').doc(studentId).delete()
                 .then(() => {
                     hideLoader();
                     showToast('ছাত্র সফলভাবে মুছে ফেলা হয়েছে!', 'success');
-
+                    
                     // Reload students
                     loadStudents().then(() => {
                         if (currentPage === 'student-list-page') {
@@ -2287,9 +2248,9 @@
         function loadStudentsForFeePayment(className) {
             const feeStudentSelect = document.getElementById('fee-student');
             feeStudentSelect.innerHTML = '<option value="">ছাত্র নির্বাচন করুন</option>';
-
+            
             if (!className) return;
-
+            
             const classStudents = students.filter(student => student.class === className);
             classStudents.forEach(student => {
                 const option = document.createElement('option');
@@ -2307,10 +2268,10 @@
                 document.getElementById('due-amount').value = '';
                 return;
             }
-
+            
             const student = students.find(s => s.id === studentId);
             if (!student) return;
-
+            
             document.getElementById('monthly-fee').value = student.monthlyFee;
             document.getElementById('paid-months').value = '';
             document.getElementById('paid-amount').value = '';
@@ -2321,7 +2282,7 @@
             const monthlyFee = parseInt(document.getElementById('monthly-fee').value) || 0;
             const paidMonths = parseInt(document.getElementById('paid-months').value) || 0;
             const dueAmount = parseInt(document.getElementById('due-amount').value) || 0;
-
+            
             if (monthlyFee && paidMonths) {
                 const totalAmount = monthlyFee * paidMonths;
                 document.getElementById('paid-amount').value = totalAmount;
@@ -2331,23 +2292,23 @@
         function searchStudentsForFeePayment(searchTerm) {
             const searchResults = document.getElementById('search-results');
             searchResults.innerHTML = '';
-
+            
             if (!searchTerm) {
                 searchResults.style.display = 'none';
                 return;
             }
-
-            const filteredStudents = students.filter(student =>
+            
+            const filteredStudents = students.filter(student => 
                 student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 student.mobile.includes(searchTerm)
             );
-
+            
             if (filteredStudents.length === 0) {
                 searchResults.style.display = 'none';
                 return;
             }
-
+            
             filteredStudents.forEach(student => {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'search-result-item';
@@ -2360,7 +2321,7 @@
                         <div>${student.mobile}</div>
                     </div>
                 `;
-
+                
                 resultItem.addEventListener('click', () => {
                     document.getElementById('fee-class').value = student.class;
                     loadStudentsForFeePayment(student.class);
@@ -2369,10 +2330,10 @@
                     document.getElementById('student-search-input').value = '';
                     searchResults.style.display = 'none';
                 });
-
+                
                 searchResults.appendChild(resultItem);
             });
-
+            
             searchResults.style.display = 'block';
         }
 
@@ -2386,28 +2347,28 @@
             const firstExam = document.getElementById('first-exam').checked;
             const secondExam = document.getElementById('second-exam').checked;
             const thirdExam = document.getElementById('third-exam').checked;
-
+            
             if (!studentId || !paidMonths || !paidAmount || !paymentMethod) {
                 showToast('সমস্ত প্রয়োজনীয় তথ্য প্রদান করুন', 'error');
                 return;
             }
-
+            
             const student = students.find(s => s.id === studentId);
             if (!student) {
                 showToast('ছাত্র পাওয়া যায়নি', 'error');
                 return;
             }
-
+            
             showLoader();
-
+            
             // ৩. বেতন পরিশোধ (Payment Handling) - Using new advance payment logic
             const paymentResult = processPaymentWithAdvance(student, paidMonths);
-
+            
             const newPaidMonths = paymentResult.newPaidMonths;
             const newDueMonths = paymentResult.newDueMonths;
             const newAdvanceMonths = paymentResult.newAdvanceMonths;
             const newTotalPaid = (student.totalPaid || 0) + paidAmount + examFeeAmount;
-
+            
             // Recalculate total due including manual dues
             const dueInfo = calculateStudentDues({
                 ...student,
@@ -2418,7 +2379,7 @@
                 manualDueAmount: paymentResult.manualDueAmount
             });
             const newTotalDue = dueInfo.totalDueAmount;
-
+            
             // Update student record
             const studentUpdate = {
                 paidMonths: newPaidMonths,
@@ -2431,14 +2392,14 @@
                 lastDueUpdate: new Date().toISOString().split('T')[0],
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-
+            
             // Update exam fee status if applicable
             if (examFeeCheckbox) {
                 if (firstExam) studentUpdate.firstExam = true;
                 if (secondExam) studentUpdate.secondExam = true;
                 if (thirdExam) studentUpdate.thirdExam = true;
             }
-
+            
             // Create payment record
             const paymentData = {
                 userId: currentUser.uid,
@@ -2456,93 +2417,93 @@
                 paymentDate: new Date().toISOString().split('T')[0],
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
-
+            
             // Perform both operations
             Promise.all([
                 db.collection('students').doc(studentId).update(studentUpdate),
                 db.collection('payments').add(paymentData)
             ])
-                .then(() => {
-                    hideLoader();
-
-                    // Show detailed success message
-                    let successMsg = 'বেতন সফলভাবে জমা দেওয়া হয়েছে!';
-                    if (newAdvanceMonths > 0) {
-                        successMsg += ` (${newAdvanceMonths} মাস অগ্রিম)`;
-                    } else if (newDueMonths > 0) {
-                        successMsg += ` (${newDueMonths} মাস বকেয়া বাকি)`;
-                    } else {
-                        successMsg += ' (সম্পূর্ণ আপডেট)';
-                    }
-
-                    showToast(successMsg, 'success');
-                    document.getElementById('fee-payment-form').reset();
-                    document.getElementById('exam-fee-container').style.display = 'none';
-
-                    // Generate and show receipt
-                    generateReceipt({
-                        studentName: student.name,
-                        studentClass: student.class,
-                        fatherName: student.fatherName,
-                        paidMonths: paidMonths,
-                        paidAmount: paidAmount,
-                        examFeeAmount: examFeeAmount,
-                        totalAmount: paidAmount + examFeeAmount,
-                        paymentMethod: paymentMethod,
-                        paymentDate: new Date()
-                    });
-
-                    // Reload data
-                    loadStudents();
-                    loadPayments();
-                })
-                .catch((error) => {
-                    hideLoader();
-                    showToast('বেতন জমা দিতে সমস্যা: ' + error.message, 'error');
+            .then(() => {
+                hideLoader();
+                
+                // Show detailed success message
+                let successMsg = 'বেতন সফলভাবে জমা দেওয়া হয়েছে!';
+                if (newAdvanceMonths > 0) {
+                    successMsg += ` (${newAdvanceMonths} মাস অগ্রিম)`;
+                } else if (newDueMonths > 0) {
+                    successMsg += ` (${newDueMonths} মাস বকেয়া বাকি)`;
+                } else {
+                    successMsg += ' (সম্পূর্ণ আপডেট)';
+                }
+                
+                showToast(successMsg, 'success');
+                document.getElementById('fee-payment-form').reset();
+                document.getElementById('exam-fee-container').style.display = 'none';
+                
+                // Generate and show receipt
+                generateReceipt({
+                    studentName: student.name,
+                    studentClass: student.class,
+                    fatherName: student.fatherName,
+                    paidMonths: paidMonths,
+                    paidAmount: paidAmount,
+                    examFeeAmount: examFeeAmount,
+                    totalAmount: paidAmount + examFeeAmount,
+                    paymentMethod: paymentMethod,
+                    paymentDate: new Date()
                 });
+                
+                // Reload data
+                loadStudents();
+                loadPayments();
+            })
+            .catch((error) => {
+                hideLoader();
+                showToast('বেতন জমা দিতে সমস্যা: ' + error.message, 'error');
+            });
         }
 
         function loadTodayPayments() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('today-date').textContent = `আজকের তারিখ: ${formatDate(today)}`;
-
+            
             // Filter today's payments
             todayPayments = payments.filter(payment => payment.paymentDate === today);
-
+            
             // Sort by timestamp (newest first)
             todayPayments.sort((a, b) => {
                 const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
                 const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
                 return dateB - dateA;
             });
-
+            
             displayTodayPayments();
         }
 
         function displayTodayPayments() {
             const todayPaymentsBody = document.getElementById('today-payments-body');
             todayPaymentsBody.innerHTML = '';
-
+            
             if (todayPayments.length === 0) {
                 todayPaymentsBody.innerHTML = '<tr><td colspan="8" class="text-center">আজকে কোনো বেতন জমা দেওয়া হয়নি</td></tr>';
                 document.getElementById('today-total-amount').textContent = '0';
                 document.getElementById('today-total-students').textContent = '0';
                 return;
             }
-
+            
             let totalAmount = 0;
             const uniqueStudents = new Set();
-
+            
             todayPayments.forEach((payment, index) => {
                 const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
-                const timeString = paymentDate.toLocaleTimeString('bn-BD', {
-                    hour: '2-digit',
-                    minute: '2-digit'
+                const timeString = paymentDate.toLocaleTimeString('bn-BD', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
                 });
-
+                
                 totalAmount += payment.totalAmount || 0;
                 uniqueStudents.add(payment.studentId);
-
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="serial-number">${index + 1}</td>
@@ -2558,27 +2519,27 @@
                         </button>
                     </td>
                 `;
-
+                
                 todayPaymentsBody.appendChild(row);
             });
-
+            
             document.getElementById('today-total-amount').textContent = totalAmount;
             document.getElementById('today-total-students').textContent = uniqueStudents.size;
         }
 
         function formatDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('bn-BD', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            return date.toLocaleDateString('bn-BD', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
             });
         }
 
         function loadUnpaidStudents() {
             const unpaidStudentsContainer = document.getElementById('unpaid-students-container');
             unpaidStudentsContainer.innerHTML = '';
-
+            
             // Group students by class
             const classGroups = {};
             students.forEach(student => {
@@ -2587,29 +2548,29 @@
                 }
                 classGroups[student.class].push(student);
             });
-
+            
             // Create sections for each class with unpaid students
             Object.keys(classGroups).forEach(className => {
-                const unpaidStudents = classGroups[className].filter(student =>
+                const unpaidStudents = classGroups[className].filter(student => 
                     (student.dueMonths && student.dueMonths > 0) || (student.totalDue && student.totalDue > 0)
                 );
-
+                
                 if (unpaidStudents.length === 0) return;
-
+                
                 // Sort by admission date (oldest first)
                 unpaidStudents.sort((a, b) => {
                     const dateA = new Date(a.admissionDate || '9999-12-31');
                     const dateB = new Date(b.admissionDate || '9999-12-31');
                     return dateA - dateB;
                 });
-
+                
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
-
+                
                 // Calculate class summary
                 const totalDueAmount = unpaidStudents.reduce((sum, student) => sum + (student.totalDue || 0), 0);
                 const totalDueMonths = unpaidStudents.reduce((sum, student) => sum + (student.dueMonths || 0), 0);
-
+                
                 classSection.innerHTML = `
                     <div class="class-header">
                         <h5>${className}</h5>
@@ -2643,35 +2604,35 @@
                         </div>
                     </div>
                 `;
-
+                
                 unpaidStudentsContainer.appendChild(classSection);
-
+                
                 // Display unpaid students for this class
                 const unpaidBody = document.getElementById(`unpaid-body-${className.replace(/\s+/g, '-')}`);
                 unpaidStudents.forEach(student => {
                     const row = document.createElement('tr');
-
+                    
                     // Calculate total due with manual dues
                     const autoDueMonths = student.dueMonths || 0;
                     const manualDueMonths = student.manualDueMonths || 0;
                     const totalDueMonths = autoDueMonths + manualDueMonths;
-
+                    
                     const autoDueAmount = autoDueMonths * student.monthlyFee;
                     const manualDueAmount = student.manualDueAmount || 0;
                     const totalDue = autoDueAmount + manualDueAmount;
-
+                    
                     // Format due months display
                     let dueMonthsDisplay = `${totalDueMonths}`;
                     if (manualDueMonths > 0) {
                         dueMonthsDisplay += ` <span class="badge bg-warning" style="font-size: 0.65rem;">+${manualDueMonths}</span>`;
                     }
-
+                    
                     // Format total due display
                     let totalDueDisplay = `${totalDue}৳`;
                     if (manualDueAmount > 0) {
                         totalDueDisplay += ` <span class="badge bg-warning" style="font-size: 0.7rem;">+${manualDueAmount}৳</span>`;
                     }
-
+                    
                     row.innerHTML = `
                         <td>
                             <div>${student.name}</div>
@@ -2694,7 +2655,7 @@
                     unpaidBody.appendChild(row);
                 });
             });
-
+            
             if (unpaidStudentsContainer.innerHTML === '') {
                 unpaidStudentsContainer.innerHTML = '<div class="alert alert-success text-center">সকল ছাত্রের বেতন পরিশোধিত হয়েছে!</div>';
             }
@@ -2707,15 +2668,15 @@
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-
+            
             const unpaidStudentsContainer = document.getElementById('unpaid-students-container');
             unpaidStudentsContainer.innerHTML = '';
-
+            
             if (className === 'all') {
                 loadUnpaidStudents();
                 return;
             }
-
+            
             // Group students by class
             const classGroups = {};
             students.forEach(student => {
@@ -2724,32 +2685,32 @@
                 }
                 classGroups[student.class].push(student);
             });
-
+            
             // Create section for selected class only
             if (classGroups[className]) {
-                const unpaidStudents = classGroups[className].filter(student =>
+                const unpaidStudents = classGroups[className].filter(student => 
                     (student.dueMonths && student.dueMonths > 0) || (student.totalDue && student.totalDue > 0)
                 );
-
+                
                 if (unpaidStudents.length === 0) {
                     unpaidStudentsContainer.innerHTML = `<div class="alert alert-success text-center">${className} - সকল ছাত্রের বেতন পরিশোধিত হয়েছে!</div>`;
                     return;
                 }
-
+                
                 // Sort by admission date (oldest first)
                 unpaidStudents.sort((a, b) => {
                     const dateA = new Date(a.admissionDate || '9999-12-31');
                     const dateB = new Date(b.admissionDate || '9999-12-31');
                     return dateA - dateB;
                 });
-
+                
                 const classSection = document.createElement('div');
                 classSection.className = 'class-section';
-
+                
                 // Calculate class summary
                 const totalDueAmount = unpaidStudents.reduce((sum, student) => sum + (student.totalDue || 0), 0);
                 const totalDueMonths = unpaidStudents.reduce((sum, student) => sum + (student.dueMonths || 0), 0);
-
+                
                 classSection.innerHTML = `
                     <div class="class-header">
                         <h5>${className}</h5>
@@ -2783,35 +2744,35 @@
                         </div>
                     </div>
                 `;
-
+                
                 unpaidStudentsContainer.appendChild(classSection);
-
+                
                 // Display unpaid students for this class
                 const unpaidBody = document.getElementById(`unpaid-body-${className.replace(/\s+/g, '-')}`);
                 unpaidStudents.forEach(student => {
                     const row = document.createElement('tr');
-
+                    
                     // Calculate total due with manual dues
                     const autoDueMonths = student.dueMonths || 0;
                     const manualDueMonths = student.manualDueMonths || 0;
                     const totalDueMonths = autoDueMonths + manualDueMonths;
-
+                    
                     const autoDueAmount = autoDueMonths * student.monthlyFee;
                     const manualDueAmount = student.manualDueAmount || 0;
                     const totalDue = autoDueAmount + manualDueAmount;
-
+                    
                     // Format due months display
                     let dueMonthsDisplay = `${totalDueMonths}`;
                     if (manualDueMonths > 0) {
                         dueMonthsDisplay += ` <span class="badge bg-warning" style="font-size: 0.65rem;">+${manualDueMonths}</span>`;
                     }
-
+                    
                     // Format total due display
                     let totalDueDisplay = `${totalDue}৳`;
                     if (manualDueAmount > 0) {
                         totalDueDisplay += ` <span class="badge bg-warning" style="font-size: 0.7rem;">+${manualDueAmount}৳</span>`;
                     }
-
+                    
                     row.innerHTML = `
                         <td>
                             <div>${student.name}</div>
@@ -2841,29 +2802,29 @@
         function quickPayment(studentId) {
             const student = students.find(s => s.id === studentId);
             if (!student) return;
-
+            
             document.getElementById('fee-class').value = student.class;
             loadStudentsForFeePayment(student.class);
             document.getElementById('fee-student').value = student.id;
             loadStudentFeeInfo(student.id);
-
+            
             showPage('fee-payment-page');
         }
 
         function downloadUnpaidList(className) {
-            const unpaidStudents = students.filter(student =>
-                student.class === className &&
+            const unpaidStudents = students.filter(student => 
+                student.class === className && 
                 ((student.dueMonths && student.dueMonths > 0) || (student.totalDue && student.totalDue > 0))
             );
-
+            
             if (unpaidStudents.length === 0) {
                 showToast('এই ক্লাসে কোনো বাকিপ্রাপ্ত ছাত্র নেই', 'warning');
                 return;
             }
-
+            
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             csvContent += "নাম,পিতার নাম,মোবাইল,বাকি মাস,বাকি টাকা\n";
-
+            
             unpaidStudents.forEach(student => {
                 const row = [
                     student.name,
@@ -2874,7 +2835,7 @@
                 ];
                 csvContent += row.join(',') + '\n';
             });
-
+            
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement('a');
             link.setAttribute('href', encodedUri);
@@ -2889,19 +2850,19 @@
             const totalStudents = students.length;
             const totalFeeCollected = students.reduce((sum, student) => sum + (student.totalPaid || 0), 0);
             const totalDueAmount = students.reduce((sum, student) => sum + (student.totalDue || 0), 0);
-
+            
             const today = new Date().toISOString().split('T')[0];
             const todayAdmissions = students.filter(student => student.admissionDate === today).length;
             const todayPaymentsCount = payments.filter(payment => payment.paymentDate === today).length;
             const todayCollection = payments
                 .filter(payment => payment.paymentDate === today)
                 .reduce((sum, payment) => sum + (payment.totalAmount || 0), 0);
-
+            
             const totalExamFeeCollected = payments.reduce((sum, payment) => sum + (payment.examFeeAmount || 0), 0);
             const todayExamFee = payments
                 .filter(payment => payment.paymentDate === today)
                 .reduce((sum, payment) => sum + (payment.examFeeAmount || 0), 0);
-
+            
             // Update dashboard elements
             document.getElementById('total-students').textContent = totalStudents;
             document.getElementById('total-fee-collected').textContent = totalFeeCollected + '৳';
@@ -2911,13 +2872,13 @@
             document.getElementById('today-collection').textContent = todayCollection + '৳';
             document.getElementById('total-exam-fee-collected').textContent = totalExamFeeCollected + '৳';
             document.getElementById('today-exam-fee').textContent = todayExamFee + '৳';
-
+            
             // Load monthly collection by class
             loadMonthlyCollectionByClass();
-
+            
             // Create class distribution chart
             createClassChart();
-
+            
             // Create payment trend chart
             createPaymentChart();
         }
@@ -2928,9 +2889,9 @@
             const currentDay = now.getDate();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
-
+            
             let periodStartDate, periodEndDate, displayMonth;
-
+            
             if (currentDay >= 10) {
                 // Current period: 10th of this month to 9th of next month
                 periodStartDate = new Date(currentYear, currentMonth, 10, 0, 0, 0);
@@ -2943,7 +2904,7 @@
                 const lastMonth = new Date(currentYear, currentMonth - 1, 1);
                 displayMonth = lastMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
             }
-
+            
             return {
                 startDate: periodStartDate.toISOString().split('T')[0],
                 endDate: periodEndDate.toISOString().split('T')[0],
@@ -2955,37 +2916,37 @@
         // Calculate monthly collection by class
         function loadMonthlyCollectionByClass() {
             const period = getCurrentMonthlyPeriod();
-
+            
             // Update display
             document.getElementById('current-month-display').textContent = period.displayMonth;
             document.getElementById('next-reset-date').textContent = period.nextResetDate;
-
+            
             // Filter payments within the current period
             const monthlyPayments = payments.filter(payment => {
                 return payment.paymentDate >= period.startDate && payment.paymentDate < period.endDate;
             });
-
+            
             // Group by class
             const collectionByClass = {};
             const classes = ['শিশু জামাত', 'প্রথম জামাত', 'দ্বিতীয় জামাত', 'তৃতীয় জামাত', 'হিফজ বিভাগ'];
-
+            
             // Initialize all classes with 0
             classes.forEach(className => {
                 collectionByClass[className] = 0;
             });
-
+            
             // Calculate collection for each class
             monthlyPayments.forEach(payment => {
                 if (payment.studentClass && collectionByClass.hasOwnProperty(payment.studentClass)) {
                     collectionByClass[payment.studentClass] += (payment.totalAmount || 0);
                 }
             });
-
+            
             // Display the results
             const container = document.getElementById('monthly-collection-by-class');
             let html = '';
             let totalCollection = 0;
-
+            
             classes.forEach(className => {
                 const amount = collectionByClass[className];
                 totalCollection += amount;
@@ -2996,7 +2957,7 @@
                     </div>
                 `;
             });
-
+            
             // Add total
             html += `
                 <div class="monthly-total">
@@ -3004,7 +2965,7 @@
                     <span class="monthly-total-amount">${totalCollection.toLocaleString('bn-BD')}৳</span>
                 </div>
             `;
-
+            
             container.innerHTML = html;
         }
 
@@ -3016,7 +2977,7 @@
                 }
                 classCounts[student.class]++;
             });
-
+            
             const ctx = document.getElementById('class-chart').getContext('2d');
             new Chart(ctx, {
                 type: 'pie',
@@ -3053,13 +3014,13 @@
                 date.setDate(date.getDate() - i);
                 last7Days.push(date.toISOString().split('T')[0]);
             }
-
+            
             const dailyPayments = last7Days.map(date => {
                 return payments
                     .filter(payment => payment.paymentDate === date)
                     .reduce((sum, payment) => sum + (payment.totalAmount || 0), 0);
             });
-
+            
             const ctx = document.getElementById('payment-chart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
@@ -3092,7 +3053,7 @@
                 payments: payments,
                 backupDate: new Date().toISOString()
             };
-
+            
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -3100,70 +3061,70 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             document.body.removeChild(downloadAnchor);
-
+            
             showToast('ব্যাকআপ সফলভাবে ডাউনলোড হয়েছে!', 'success');
         }
 
         function restoreBackup() {
             const fileInput = document.getElementById('backup-file');
             const file = fileInput.files[0];
-
+            
             if (!file) {
                 showToast('ব্যাকআপ ফাইল নির্বাচন করুন', 'error');
                 return;
             }
-
+            
             const reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 try {
                     const backupData = JSON.parse(e.target.result);
-
+                    
                     if (!backupData.students || !backupData.payments) {
                         showToast('অবৈধ ব্যাকআপ ফাইল', 'error');
                         return;
                     }
-
+                    
                     if (!confirm('আপনি কি নিশ্চিত যে আপনি এই ব্যাকআপ থেকে ডেটা রিস্টোর করতে চান? বর্তমান ডেটা ওভাররাইট হয়ে যাবে।')) {
                         return;
                     }
-
+                    
                     showLoader();
-
+                    
                     // Delete existing data
                     const deletePromises = [];
-
+                    
                     students.forEach(student => {
                         deletePromises.push(db.collection('students').doc(student.id).delete());
                     });
-
+                    
                     payments.forEach(payment => {
                         deletePromises.push(db.collection('payments').doc(payment.id).delete());
                     });
-
+                    
                     Promise.all(deletePromises)
                         .then(() => {
                             // Restore backup data
                             const restorePromises = [];
-
+                            
                             backupData.students.forEach(student => {
-                                const studentData = { ...student };
+                                const studentData = {...student};
                                 delete studentData.id; // Remove the ID as we'll create new documents
                                 restorePromises.push(db.collection('students').add(studentData));
                             });
-
+                            
                             backupData.payments.forEach(payment => {
-                                const paymentData = { ...payment };
+                                const paymentData = {...payment};
                                 delete paymentData.id; // Remove the ID as we'll create new documents
                                 restorePromises.push(db.collection('payments').add(paymentData));
                             });
-
+                            
                             return Promise.all(restorePromises);
                         })
                         .then(() => {
                             hideLoader();
                             showToast('ডেটা সফলভাবে রিস্টোর হয়েছে!', 'success');
                             fileInput.value = '';
-
+                            
                             // Reload data
                             loadAllData();
                         })
@@ -3171,12 +3132,12 @@
                             hideLoader();
                             showToast('ডেটা রিস্টোর করতে সমস্যা: ' + error.message, 'error');
                         });
-
+                    
                 } catch (error) {
                     showToast('ফাইল পার্স করতে সমস্যা: ' + error.message, 'error');
                 }
             };
-
+            
             reader.readAsText(file);
         }
 
@@ -3184,28 +3145,28 @@
             if (!confirm('আপনি কি নিশ্চিত যে আপনি সমস্ত ডেটা মুছতে চান? এই অপারেশনটি বিপরীতযোগ্য নয়!')) {
                 return;
             }
-
+            
             if (!confirm('আপনি সম্পূর্ণ নিশ্চিত? সমস্ত ছাত্র এবং পেমেন্ট তথ্য স্থায়ীভাবে মুছে যাবে!')) {
                 return;
             }
-
+            
             showLoader();
-
+            
             const deletePromises = [];
-
+            
             students.forEach(student => {
                 deletePromises.push(db.collection('students').doc(student.id).delete());
             });
-
+            
             payments.forEach(payment => {
                 deletePromises.push(db.collection('payments').doc(payment.id).delete());
             });
-
+            
             Promise.all(deletePromises)
                 .then(() => {
                     hideLoader();
                     showToast('সমস্ত ডেটা সফলভাবে মুছে ফেলা হয়েছে!', 'success');
-
+                    
                     // Reload data
                     loadAllData();
                 })
@@ -3214,50 +3175,50 @@
                     showToast('ডেটা মুছতে সমস্যা: ' + error.message, 'error');
                 });
         }
-
+   
         // Load today's payments
         function loadTodayPayments() {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const todayEnd = new Date(today);
             todayEnd.setHours(23, 59, 59, 999);
-
+            
             const todayPayments = payments.filter(payment => {
                 const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
                 return paymentDate >= today && paymentDate <= todayEnd;
             });
-
+            
             // Sort by timestamp descending (latest first)
             todayPayments.sort((a, b) => {
                 const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
                 const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
                 return dateB - dateA;
             });
-
+            
             document.getElementById('today-date').textContent = `তারিখ: ${today.toLocaleDateString('bn-BD')}`;
-
+            
             const todayPaymentsBody = document.getElementById('today-payments-body');
             todayPaymentsBody.innerHTML = '';
-
+            
             // Update summary
             const totalAmount = todayPayments.reduce((sum, payment) => sum + payment.totalAmount, 0);
             const uniqueStudents = [...new Set(todayPayments.map(payment => payment.studentId))].length;
-
+            
             document.getElementById('today-total-amount').textContent = totalAmount;
             document.getElementById('today-total-students').textContent = uniqueStudents;
-
+            
             if (todayPayments.length === 0) {
                 todayPaymentsBody.innerHTML = '<tr><td colspan="8" class="text-center">আজকে কোনো বেতন জমা হয়নি</td></tr>';
                 return;
             }
-
+            
             todayPayments.forEach((payment, index) => {
                 const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
-                const timeString = paymentDate.toLocaleTimeString('bn-BD', {
-                    hour: '2-digit',
-                    minute: '2-digit'
+                const timeString = paymentDate.toLocaleTimeString('bn-BD', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
                 });
-
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="serial-number">${index + 1}</td>
@@ -3282,7 +3243,7 @@
             if (!confirm('আপনি কি নিশ্চিত যে আপনি এই পেমেন্ট রেকর্ডটি মুছে ফেলতে চান?')) {
                 return;
             }
-
+            
             showLoader();
             db.collection('payments').doc(paymentId).delete()
                 .then(() => {
@@ -3304,30 +3265,30 @@
             if (!confirm('আপনি কি নিশ্চিত যে আপনি আজকের সকল পেমেন্ট রেকর্ড মুছে ফেলতে চান? এটি পূর্বের পেমেন্ট রেকর্ডগুলোকেও প্রভাবিত করতে পারে!')) {
                 return;
             }
-
+            
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const todayEnd = new Date(today);
             todayEnd.setHours(23, 59, 59, 999);
-
+            
             const todayPayments = payments.filter(payment => {
                 const paymentDate = payment.timestamp ? payment.timestamp.toDate() : new Date();
                 return paymentDate >= today && paymentDate <= todayEnd;
             });
-
+            
             if (todayPayments.length === 0) {
                 showToast('আজকের কোনো পেমেন্ট রেকর্ড নেই!', 'info');
                 return;
             }
-
+            
             showLoader();
-
+            
             const batch = db.batch();
             todayPayments.forEach(payment => {
                 const paymentRef = db.collection('payments').doc(payment.id);
                 batch.delete(paymentRef);
             });
-
+            
             batch.commit()
                 .then(() => {
                     hideLoader();
@@ -3350,41 +3311,41 @@
 
 
 
-        // Advanced Search Functions
-        function searchStudentsForFeePayment(searchTerm) {
-            const searchResults = document.getElementById('search-results');
-            searchResults.innerHTML = '';
-
-            if (!searchTerm) {
-                searchResults.style.display = 'none';
-                return;
-            }
-
-            // Get selected class
-            const selectedClass = document.getElementById('fee-class').value;
-
-            // Filter students by selected class first
-            let filteredStudents = students;
-            if (selectedClass) {
-                filteredStudents = students.filter(student => student.class === selectedClass);
-            }
-
-            // Now apply search filter
-            filteredStudents = searchStudents(searchTerm, filteredStudents);
-
-            if (filteredStudents.length === 0) {
-                const noResult = document.createElement('div');
-                noResult.className = 'search-result-item';
-                noResult.textContent = 'কোনো ছাত্র পাওয়া যায়নি';
-                searchResults.appendChild(noResult);
-                searchResults.style.display = 'block';
-                return;
-            }
-
-            filteredStudents.forEach(student => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.innerHTML = `
+// Advanced Search Functions
+function searchStudentsForFeePayment(searchTerm) {
+    const searchResults = document.getElementById('search-results');
+    searchResults.innerHTML = '';
+    
+    if (!searchTerm) {
+        searchResults.style.display = 'none';
+        return;
+    }
+    
+    // Get selected class
+    const selectedClass = document.getElementById('fee-class').value;
+    
+    // Filter students by selected class first
+    let filteredStudents = students;
+    if (selectedClass) {
+        filteredStudents = students.filter(student => student.class === selectedClass);
+    }
+    
+    // Now apply search filter
+    filteredStudents = searchStudents(searchTerm, filteredStudents);
+    
+    if (filteredStudents.length === 0) {
+        const noResult = document.createElement('div');
+        noResult.className = 'search-result-item';
+        noResult.textContent = 'কোনো ছাত্র পাওয়া যায়নি';
+        searchResults.appendChild(noResult);
+        searchResults.style.display = 'block';
+        return;
+    }
+    
+    filteredStudents.forEach(student => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'search-result-item';
+        resultItem.innerHTML = `
             <div class="student-option">
                 <div>
                     <div class="student-name">${student.name}</div>
@@ -3393,498 +3354,498 @@
                 <div>${student.mobile}</div>
             </div>
         `;
+        
+        resultItem.addEventListener('click', () => {
+            document.getElementById('fee-class').value = student.class;
+            loadStudentsForFeePayment(student.class);
+            document.getElementById('fee-student').value = student.id;
+            loadStudentFeeInfo(student.id);
+            document.getElementById('student-search-input').value = '';
+            searchResults.style.display = 'none';
+        });
+        
+        searchResults.appendChild(resultItem);
+    });
+    
+    searchResults.style.display = 'block';
+}
 
-                resultItem.addEventListener('click', () => {
-                    document.getElementById('fee-class').value = student.class;
-                    loadStudentsForFeePayment(student.class);
-                    document.getElementById('fee-student').value = student.id;
-                    loadStudentFeeInfo(student.id);
-                    document.getElementById('student-search-input').value = '';
-                    searchResults.style.display = 'none';
-                });
+function searchStudents(query, studentList = students) {
+    if (!query) return studentList;
+    
+    const options = {
+        includeScore: true,
+        threshold: 0.4,
+        keys: ['name', 'fatherName', 'mobile', 'class']
+    };
+    
+    const fuse = new Fuse(studentList, options);
+    const result = fuse.search(query);
+    
+    return result.map(item => item.item);
+}
 
-                searchResults.appendChild(resultItem);
-            });
-
-            searchResults.style.display = 'block';
-        }
-
-        function searchStudents(query, studentList = students) {
-            if (!query) return studentList;
-
-            const options = {
-                includeScore: true,
-                threshold: 0.4,
-                keys: ['name', 'fatherName', 'mobile', 'class']
-            };
-
-            const fuse = new Fuse(studentList, options);
-            const result = fuse.search(query);
-
-            return result.map(item => item.item);
-        }
-
-        // Alternative simple search function (if you prefer)
-        function simpleSearchStudents(query, studentList = students) {
-            if (!query.trim()) return studentList;
-
-            const searchTerms = query.toLowerCase().split(' ');
-
-            return studentList.filter(student => {
-                const searchText = `
+// Alternative simple search function (if you prefer)
+function simpleSearchStudents(query, studentList = students) {
+    if (!query.trim()) return studentList;
+    
+    const searchTerms = query.toLowerCase().split(' ');
+    
+    return studentList.filter(student => {
+        const searchText = `
             ${student.name} 
             ${student.fatherName} 
             ${student.mobile} 
             ${student.class}
         `.toLowerCase();
+        
+        return searchTerms.every(term => searchText.includes(term));
+    });
+}
 
-                return searchTerms.every(term => searchText.includes(term));
-            });
+// ==========================================
+// AUTOMATIC DUE PAYMENT SYSTEM (Hriday Edition)
+// স্বয়ংক্রিয় বকেয়া বেতন সিস্টেম
+// ==========================================
+
+/**
+ * ১. মূল ভিত্তি: ভর্তি তারিখ ভিত্তিক ৩০ দিনের সময়চক্র
+ * Calculate how many 30-day cycles have passed since admission date
+ * This calculation NEVER stops, regardless of payment status
+ */
+function calculateMonthsSinceAdmission(admissionDate) {
+    if (!admissionDate) return 0;
+    
+    const admission = new Date(admissionDate);
+    const today = new Date();
+    
+    // Set to start of day for accurate calculation
+    admission.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    // Calculate difference in milliseconds
+    const diffTime = today - admission;
+    
+    // Calculate difference in days
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Calculate months based on 30-day intervals
+    // This is the core of the system - every 30 days = 1 month
+    const monthsPassed = Math.floor(diffDays / 30);
+    
+    return Math.max(0, monthsPassed);
+}
+
+/**
+ * ২. বকেয়া হিসাব (Due Calculation)
+ * Calculate due months for a student based on admission date and payments
+ * Formula: totalDueMonths = floor((today - admissionDate) / 30 days)
+ */
+function calculateStudentDues(student) {
+    // Calculate total months that should have been paid since admission
+    const monthsSinceAdmission = calculateMonthsSinceAdmission(student.admissionDate);
+    
+    // Get current paid months and advance months
+    const paidMonths = student.paidMonths || 0;
+    const advanceMonths = student.advanceMonths || 0;
+    
+    // ৩. অগ্রিম বেতন (Advance Tracking)
+    // If student has advance, it covers future months
+    // Advance is deducted from months since admission first
+    let effectiveMonthsSinceAdmission = monthsSinceAdmission;
+    let currentAdvance = advanceMonths;
+    
+    if (advanceMonths > 0) {
+        // Advance covers the most recent months
+        effectiveMonthsSinceAdmission = Math.max(0, monthsSinceAdmission - advanceMonths);
+        
+        // If advance is more than months passed, keep the extra advance
+        if (advanceMonths > monthsSinceAdmission) {
+            currentAdvance = advanceMonths - monthsSinceAdmission;
+            effectiveMonthsSinceAdmission = 0;
+        } else {
+            currentAdvance = 0;
         }
+    }
+    
+    // Calculate due months
+    // Due = Effective months since admission - paid months (excluding advance)
+    const dueMonths = Math.max(0, effectiveMonthsSinceAdmission - paidMonths);
+    
+    // Calculate due amount (automatic calculation only)
+    const autoDueAmount = dueMonths * (student.monthlyFee || 0);
+    
+    // ৫. ম্যানুয়াল বকেয়া সংশোধন (Manual Adjustment)
+    // Add manual dues on top of automatic calculation
+    const manualDueMonths = student.manualDueMonths || 0;
+    const manualDueAmount = student.manualDueAmount || 0;
+    
+    // Total dues = automatic + manual
+    const totalDueMonths = dueMonths + manualDueMonths;
+    const totalDueAmount = autoDueAmount + manualDueAmount;
+    
+    return {
+        monthsSinceAdmission: monthsSinceAdmission,
+        autoDueMonths: dueMonths,  // Automatic due months
+        autoDueAmount: autoDueAmount,  // Automatic due amount
+        manualDueMonths: manualDueMonths,  // Manual due months
+        manualDueAmount: manualDueAmount,  // Manual due amount
+        totalDueMonths: totalDueMonths,  // Total due months
+        totalDueAmount: totalDueAmount,  // Total due amount
+        advanceMonths: currentAdvance,  // Updated advance months
+        paidMonths: paidMonths
+    };
+}
 
-        // ==========================================
-        // AUTOMATIC DUE PAYMENT SYSTEM (Hriday Edition)
-        // স্বয়ংক্রিয় বকেয়া বেতন সিস্টেম
-        // ==========================================
-
-        /**
-         * ১. মূল ভিত্তি: ভর্তি তারিখ ভিত্তিক ৩০ দিনের সময়চক্র
-         * Calculate how many 30-day cycles have passed since admission date
-         * This calculation NEVER stops, regardless of payment status
-         */
-        function calculateMonthsSinceAdmission(admissionDate) {
-            if (!admissionDate) return 0;
-
-            const admission = new Date(admissionDate);
-            const today = new Date();
-
-            // Set to start of day for accurate calculation
-            admission.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-
-            // Calculate difference in milliseconds
-            const diffTime = today - admission;
-
-            // Calculate difference in days
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-            // Calculate months based on 30-day intervals
-            // This is the core of the system - every 30 days = 1 month
-            const monthsPassed = Math.floor(diffDays / 30);
-
-            return Math.max(0, monthsPassed);
+/**
+ * ৩. বেতন পরিশোধ (Payment Handling)
+ * Process payment and update due/advance accordingly
+ */
+function processPaymentWithAdvance(student, payingMonths) {
+    const dueInfo = calculateStudentDues(student);
+    
+    let newDueMonths = dueInfo.autoDueMonths;
+    let newAdvanceMonths = dueInfo.advanceMonths;
+    let newPaidMonths = student.paidMonths || 0;
+    
+    if (payingMonths <= dueInfo.totalDueMonths) {
+        // Payment covers only due months
+        // First clear manual dues, then automatic dues
+        const manualDueMonths = student.manualDueMonths || 0;
+        
+        if (payingMonths <= manualDueMonths) {
+            // Payment only covers manual dues
+            student.manualDueMonths = manualDueMonths - payingMonths;
+            student.manualDueAmount = Math.max(0, (student.manualDueAmount || 0) - (payingMonths * student.monthlyFee));
+        } else {
+            // Payment covers all manual dues and some automatic dues
+            const remainingPayment = payingMonths - manualDueMonths;
+            student.manualDueMonths = 0;
+            student.manualDueAmount = 0;
+            newDueMonths = Math.max(0, dueInfo.autoDueMonths - remainingPayment);
+            newPaidMonths += remainingPayment;
         }
+        
+        newAdvanceMonths = dueInfo.advanceMonths;
+    } else {
+        // Payment covers all dues and creates advance
+        // Clear all dues first
+        student.manualDueMonths = 0;
+        student.manualDueAmount = 0;
+        newDueMonths = 0;
+        
+        // Calculate advance
+        const excessPayment = payingMonths - dueInfo.totalDueMonths;
+        newAdvanceMonths = dueInfo.advanceMonths + excessPayment;
+        newPaidMonths += dueInfo.autoDueMonths;
+    }
+    
+    return {
+        newDueMonths: newDueMonths,
+        newAdvanceMonths: newAdvanceMonths,
+        newPaidMonths: newPaidMonths,
+        manualDueMonths: student.manualDueMonths || 0,
+        manualDueAmount: student.manualDueAmount || 0
+    };
+}
 
-        /**
-         * ২. বকেয়া হিসাব (Due Calculation)
-         * Calculate due months for a student based on admission date and payments
-         * Formula: totalDueMonths = floor((today - admissionDate) / 30 days)
-         */
-        function calculateStudentDues(student) {
-            // Calculate total months that should have been paid since admission
-            const monthsSinceAdmission = calculateMonthsSinceAdmission(student.admissionDate);
-
-            // Get current paid months and advance months
-            const paidMonths = student.paidMonths || 0;
-            const advanceMonths = student.advanceMonths || 0;
-
-            // ৩. অগ্রিম বেতন (Advance Tracking)
-            // If student has advance, it covers future months
-            // Advance is deducted from months since admission first
-            let effectiveMonthsSinceAdmission = monthsSinceAdmission;
-            let currentAdvance = advanceMonths;
-
-            if (advanceMonths > 0) {
-                // Advance covers the most recent months
-                effectiveMonthsSinceAdmission = Math.max(0, monthsSinceAdmission - advanceMonths);
-
-                // If advance is more than months passed, keep the extra advance
-                if (advanceMonths > monthsSinceAdmission) {
-                    currentAdvance = advanceMonths - monthsSinceAdmission;
-                    effectiveMonthsSinceAdmission = 0;
-                } else {
-                    currentAdvance = 0;
-                }
-            }
-
-            // Calculate due months
-            // Due = Effective months since admission - paid months (excluding advance)
-            const dueMonths = Math.max(0, effectiveMonthsSinceAdmission - paidMonths);
-
-            // Calculate due amount (automatic calculation only)
-            const autoDueAmount = dueMonths * (student.monthlyFee || 0);
-
-            // ৫. ম্যানুয়াল বকেয়া সংশোধন (Manual Adjustment)
-            // Add manual dues on top of automatic calculation
-            const manualDueMonths = student.manualDueMonths || 0;
-            const manualDueAmount = student.manualDueAmount || 0;
-
-            // Total dues = automatic + manual
-            const totalDueMonths = dueMonths + manualDueMonths;
-            const totalDueAmount = autoDueAmount + manualDueAmount;
-
-            return {
-                monthsSinceAdmission: monthsSinceAdmission,
-                autoDueMonths: dueMonths,  // Automatic due months
-                autoDueAmount: autoDueAmount,  // Automatic due amount
-                manualDueMonths: manualDueMonths,  // Manual due months
-                manualDueAmount: manualDueAmount,  // Manual due amount
-                totalDueMonths: totalDueMonths,  // Total due months
-                totalDueAmount: totalDueAmount,  // Total due amount
-                advanceMonths: currentAdvance,  // Updated advance months
-                paidMonths: paidMonths
-            };
-        }
-
-        /**
-         * ৩. বেতন পরিশোধ (Payment Handling)
-         * Process payment and update due/advance accordingly
-         */
-        function processPaymentWithAdvance(student, payingMonths) {
-            const dueInfo = calculateStudentDues(student);
-
-            let newDueMonths = dueInfo.autoDueMonths;
-            let newAdvanceMonths = dueInfo.advanceMonths;
-            let newPaidMonths = student.paidMonths || 0;
-
-            if (payingMonths <= dueInfo.totalDueMonths) {
-                // Payment covers only due months
-                // First clear manual dues, then automatic dues
-                const manualDueMonths = student.manualDueMonths || 0;
-
-                if (payingMonths <= manualDueMonths) {
-                    // Payment only covers manual dues
-                    student.manualDueMonths = manualDueMonths - payingMonths;
-                    student.manualDueAmount = Math.max(0, (student.manualDueAmount || 0) - (payingMonths * student.monthlyFee));
-                } else {
-                    // Payment covers all manual dues and some automatic dues
-                    const remainingPayment = payingMonths - manualDueMonths;
-                    student.manualDueMonths = 0;
-                    student.manualDueAmount = 0;
-                    newDueMonths = Math.max(0, dueInfo.autoDueMonths - remainingPayment);
-                    newPaidMonths += remainingPayment;
-                }
-
-                newAdvanceMonths = dueInfo.advanceMonths;
-            } else {
-                // Payment covers all dues and creates advance
-                // Clear all dues first
-                student.manualDueMonths = 0;
-                student.manualDueAmount = 0;
-                newDueMonths = 0;
-
-                // Calculate advance
-                const excessPayment = payingMonths - dueInfo.totalDueMonths;
-                newAdvanceMonths = dueInfo.advanceMonths + excessPayment;
-                newPaidMonths += dueInfo.autoDueMonths;
-            }
-
-            return {
-                newDueMonths: newDueMonths,
-                newAdvanceMonths: newAdvanceMonths,
-                newPaidMonths: newPaidMonths,
-                manualDueMonths: student.manualDueMonths || 0,
-                manualDueAmount: student.manualDueAmount || 0
-            };
-        }
-
-        /**
-         * Update a single student's due information
-         * This runs automatically and continuously
-         * ৬. সিস্টেমের সুবিধা - Automatic and continuous updates
-         */
-        function updateStudentDues(student) {
-            const dueInfo = calculateStudentDues(student);
-
-            // Check if there's any change in automatic calculation
-            const hasAutoDueChange = student.dueMonths !== dueInfo.autoDueMonths;
-            const hasTotalDueChange = student.totalDue !== dueInfo.totalDueAmount;
-            const hasAdvanceChange = student.advanceMonths !== dueInfo.advanceMonths;
-
-            if (hasAutoDueChange || hasTotalDueChange || hasAdvanceChange) {
-                const updateData = {
-                    dueMonths: dueInfo.autoDueMonths,  // Store automatic due months
-                    totalDue: dueInfo.totalDueAmount,  // Store total due amount (auto + manual)
-                    advanceMonths: dueInfo.advanceMonths,  // Update advance months
-                    lastDueUpdate: new Date().toISOString().split('T')[0],
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                return db.collection('students').doc(student.id).update(updateData)
-                    .then(() => {
-                        // Update local student object
-                        student.dueMonths = dueInfo.autoDueMonths;
-                        student.totalDue = dueInfo.totalDueAmount;
-                        student.advanceMonths = dueInfo.advanceMonths;
-                        student.lastDueUpdate = updateData.lastDueUpdate;
-                        return true;
-                    })
-                    .catch(error => {
-                        console.error('Error updating student dues:', error);
-                        return false;
-                    });
-            }
-
-            return Promise.resolve(false);
-        }
-
-        /**
-         * Update all students' dues based on their admission dates
-         * This should run periodically (e.g., when page loads, every hour, etc.)
-         */
-        function updateAllStudentsDues() {
-            if (!students || students.length === 0) {
-                return Promise.resolve();
-            }
-
-            console.log('🔄 Updating dues for all students based on 30-day cycles...');
-
-            const updatePromises = students.map(student => updateStudentDues(student));
-
-            return Promise.all(updatePromises)
-                .then(results => {
-                    const updatedCount = results.filter(r => r === true).length;
-                    if (updatedCount > 0) {
-                        console.log(`✅ Updated dues for ${updatedCount} students`);
-                        // Refresh current page if showing student data
-                        if (currentPage === 'student-list-page' && currentClass) {
-                            loadStudentsByClass(currentClass);
-                        } else if (currentPage === 'unpaid-students-page') {
-                            loadUnpaidStudents();
-                        } else if (currentPage === 'dashboard-page') {
-                            loadDashboard();
-                        }
-                    }
-                    return updatedCount;
-                })
-                .catch(error => {
-                    console.error('Error updating all students dues:', error);
-                });
-        }
-
-        /**
-         * Get student payment status summary with detailed information
-         */
-        function getStudentPaymentStatus(student) {
-            const dueInfo = calculateStudentDues(student);
-            const monthsSinceAdmission = dueInfo.monthsSinceAdmission;
-            const totalDueMonths = dueInfo.totalDueMonths;
-            const advanceMonths = dueInfo.advanceMonths;
-
-            let status = '';
-            let statusClass = '';
-            let details = '';
-
-            if (advanceMonths > 0) {
-                status = `অগ্রিম: ${advanceMonths} মাস`;
-                statusClass = 'badge bg-success';
-                details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, ${advanceMonths} মাস অগ্রিম জমা`;
-            } else if (totalDueMonths > 0) {
-                status = `বকেয়া: ${totalDueMonths} মাস`;
-                statusClass = 'badge bg-danger';
-
-                if (dueInfo.manualDueMonths > 0) {
-                    details = `স্বয়ংক্রিয়: ${dueInfo.autoDueMonths} মাস, ম্যানুয়াল: ${dueInfo.manualDueMonths} মাস`;
-                } else {
-                    details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, ${totalDueMonths} মাস বকেয়া`;
-                }
-            } else {
-                status = 'আপডেট';
-                statusClass = 'badge bg-primary';
-                details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, কোনো বকেয়া নেই`;
-            }
-
-            return {
-                status: status,
-                statusClass: statusClass,
-                details: details,
-                monthsSinceAdmission: monthsSinceAdmission,
-                autoDueMonths: dueInfo.autoDueMonths,
-                manualDueMonths: dueInfo.manualDueMonths,
-                totalDueMonths: totalDueMonths,
-                advanceMonths: advanceMonths,
-                autoDueAmount: dueInfo.autoDueAmount,
-                manualDueAmount: dueInfo.manualDueAmount,
-                totalDueAmount: dueInfo.totalDueAmount
-            };
-        }
-
-        /**
-         * Initialize automatic due update system
-         * Runs on page load and periodically
-         */
-        function initializeAutoDueSystem() {
-            console.log('🚀 Initializing Automatic Due Payment System (Hriday Edition)');
-            console.log('📋 System Features:');
-            console.log('   ✓ ভর্তি তারিখ ভিত্তিক ৩০ দিনের সময়চক্র');
-            console.log('   ✓ স্বয়ংক্রিয় বকেয়া হিসাব');
-            console.log('   ✓ অগ্রিম বেতন ট্র্যাকিং');
-            console.log('   ✓ ম্যানুয়াল বকেয়া সংশোধন');
-
-            // Clear any existing interval
-            if (autoUpdateInterval) {
-                clearInterval(autoUpdateInterval);
-            }
-
-            // Update dues every 30 minutes
-            autoUpdateInterval = setInterval(() => {
-                console.log('⏰ Periodic due update triggered (30-day cycle check)');
-                updateAllStudentsDues();
-            }, 30 * 60 * 1000);  // 30 minutes
-
-            console.log('✅ Auto Due System initialized - Updates every 30 minutes');
-            console.log('💡 Tip: Dues are calculated based on 30-day cycles from admission date');
-        }
-
-        // ==================== Receipt System Functions ====================
-
-        let currentReceiptData = null;
-        let receiptCounter = 1;
-
-        // Bengali number conversion
-        const bengaliNumbers = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-
-        function toBengaliNumber(num) {
-            return num.toString().split('').map(digit => {
-                return digit >= '0' && digit <= '9' ? bengaliNumbers[digit] : digit;
-            }).join('');
-        }
-
-        // Month name conversion
-        const monthNames = {
-            '01': 'জানুয়ারি', '02': 'ফেব্রুয়ারি', '03': 'মার্চ',
-            '04': 'এপ্রিল', '05': 'মে', '06': 'জুন',
-            '07': 'জুলাই', '08': 'আগস্ট', '09': 'সেপ্টেম্বর',
-            '10': 'অক্টোবর', '11': 'নভেম্বর', '12': 'ডিসেম্বর'
+/**
+ * Update a single student's due information
+ * This runs automatically and continuously
+ * ৬. সিস্টেমের সুবিধা - Automatic and continuous updates
+ */
+function updateStudentDues(student) {
+    const dueInfo = calculateStudentDues(student);
+    
+    // Check if there's any change in automatic calculation
+    const hasAutoDueChange = student.dueMonths !== dueInfo.autoDueMonths;
+    const hasTotalDueChange = student.totalDue !== dueInfo.totalDueAmount;
+    const hasAdvanceChange = student.advanceMonths !== dueInfo.advanceMonths;
+    
+    if (hasAutoDueChange || hasTotalDueChange || hasAdvanceChange) {
+        const updateData = {
+            dueMonths: dueInfo.autoDueMonths,  // Store automatic due months
+            totalDue: dueInfo.totalDueAmount,  // Store total due amount (auto + manual)
+            advanceMonths: dueInfo.advanceMonths,  // Update advance months
+            lastDueUpdate: new Date().toISOString().split('T')[0],
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
+        
+        return db.collection('students').doc(student.id).update(updateData)
+            .then(() => {
+                // Update local student object
+                student.dueMonths = dueInfo.autoDueMonths;
+                student.totalDue = dueInfo.totalDueAmount;
+                student.advanceMonths = dueInfo.advanceMonths;
+                student.lastDueUpdate = updateData.lastDueUpdate;
+                return true;
+            })
+            .catch(error => {
+                console.error('Error updating student dues:', error);
+                return false;
+            });
+    }
+    
+    return Promise.resolve(false);
+}
 
-        // Generate unique receipt number
-        function generateReceiptNumber() {
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-
-            // Try to get counter from localStorage
-            const savedCounter = localStorage.getItem('receiptCounter');
-            if (savedCounter) {
-                receiptCounter = parseInt(savedCounter) + 1;
+/**
+ * Update all students' dues based on their admission dates
+ * This should run periodically (e.g., when page loads, every hour, etc.)
+ */
+function updateAllStudentsDues() {
+    if (!students || students.length === 0) {
+        return Promise.resolve();
+    }
+    
+    console.log('🔄 Updating dues for all students based on 30-day cycles...');
+    
+    const updatePromises = students.map(student => updateStudentDues(student));
+    
+    return Promise.all(updatePromises)
+        .then(results => {
+            const updatedCount = results.filter(r => r === true).length;
+            if (updatedCount > 0) {
+                console.log(`✅ Updated dues for ${updatedCount} students`);
+                // Refresh current page if showing student data
+                if (currentPage === 'student-list-page' && currentClass) {
+                    loadStudentsByClass(currentClass);
+                } else if (currentPage === 'unpaid-students-page') {
+                    loadUnpaidStudents();
+                } else if (currentPage === 'dashboard-page') {
+                    loadDashboard();
+                }
             }
+            return updatedCount;
+        })
+        .catch(error => {
+            console.error('Error updating all students dues:', error);
+        });
+}
 
-            localStorage.setItem('receiptCounter', receiptCounter);
-
-            return `NQM-${year}${month}${day}-${String(receiptCounter).padStart(3, '0')}`;
+/**
+ * Get student payment status summary with detailed information
+ */
+function getStudentPaymentStatus(student) {
+    const dueInfo = calculateStudentDues(student);
+    const monthsSinceAdmission = dueInfo.monthsSinceAdmission;
+    const totalDueMonths = dueInfo.totalDueMonths;
+    const advanceMonths = dueInfo.advanceMonths;
+    
+    let status = '';
+    let statusClass = '';
+    let details = '';
+    
+    if (advanceMonths > 0) {
+        status = `অগ্রিম: ${advanceMonths} মাস`;
+        statusClass = 'badge bg-success';
+        details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, ${advanceMonths} মাস অগ্রিম জমা`;
+    } else if (totalDueMonths > 0) {
+        status = `বকেয়া: ${totalDueMonths} মাস`;
+        statusClass = 'badge bg-danger';
+        
+        if (dueInfo.manualDueMonths > 0) {
+            details = `স্বয়ংক্রিয়: ${dueInfo.autoDueMonths} মাস, ম্যানুয়াল: ${dueInfo.manualDueMonths} মাস`;
+        } else {
+            details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, ${totalDueMonths} মাস বকেয়া`;
         }
+    } else {
+        status = 'আপডেট';
+        statusClass = 'badge bg-primary';
+        details = `ভর্তির পর ${monthsSinceAdmission} মাস অতিক্রান্ত, কোনো বকেয়া নেই`;
+    }
+    
+    return {
+        status: status,
+        statusClass: statusClass,
+        details: details,
+        monthsSinceAdmission: monthsSinceAdmission,
+        autoDueMonths: dueInfo.autoDueMonths,
+        manualDueMonths: dueInfo.manualDueMonths,
+        totalDueMonths: totalDueMonths,
+        advanceMonths: advanceMonths,
+        autoDueAmount: dueInfo.autoDueAmount,
+        manualDueAmount: dueInfo.manualDueAmount,
+        totalDueAmount: dueInfo.totalDueAmount
+    };
+}
 
-        // Format date in Bengali
-        function formatBengaliDate(date) {
-            const day = toBengaliNumber(date.getDate());
-            const month = monthNames[String(date.getMonth() + 1).padStart(2, '0')];
-            const year = toBengaliNumber(date.getFullYear());
+/**
+ * Initialize automatic due update system
+ * Runs on page load and periodically
+ */
+function initializeAutoDueSystem() {
+    console.log('🚀 Initializing Automatic Due Payment System (Hriday Edition)');
+    console.log('📋 System Features:');
+    console.log('   ✓ ভর্তি তারিখ ভিত্তিক ৩০ দিনের সময়চক্র');
+    console.log('   ✓ স্বয়ংক্রিয় বকেয়া হিসাব');
+    console.log('   ✓ অগ্রিম বেতন ট্র্যাকিং');
+    console.log('   ✓ ম্যানুয়াল বকেয়া সংশোধন');
+    
+    // Clear any existing interval
+    if (autoUpdateInterval) {
+        clearInterval(autoUpdateInterval);
+    }
+    
+    // Update dues every 30 minutes
+    autoUpdateInterval = setInterval(() => {
+        console.log('⏰ Periodic due update triggered (30-day cycle check)');
+        updateAllStudentsDues();
+    }, 30 * 60 * 1000);  // 30 minutes
+    
+    console.log('✅ Auto Due System initialized - Updates every 30 minutes');
+    console.log('💡 Tip: Dues are calculated based on 30-day cycles from admission date');
+}
 
-            return `${day} ${month}, ${year}`;
-        }
+// ==================== Receipt System Functions ====================
 
-        // Format currency in Bengali
-        function formatCurrency(amount) {
-            return `${toBengaliNumber(amount)} ৳`;
-        }
+let currentReceiptData = null;
+let receiptCounter = 1;
 
-        // Generate and show receipt
-        function generateReceipt(data) {
-            const receiptNumber = generateReceiptNumber();
-            const currentDate = data.paymentDate || new Date();
+// Bengali number conversion
+const bengaliNumbers = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
 
-            // Store current receipt data
-            currentReceiptData = {
-                ...data,
-                receiptNumber,
-                date: formatBengaliDate(currentDate)
-            };
+function toBengaliNumber(num) {
+    return num.toString().split('').map(digit => {
+        return digit >= '0' && digit <= '9' ? bengaliNumbers[digit] : digit;
+    }).join('');
+}
 
-            // Update receipt fields
-            document.getElementById('receiptNumber').textContent = `রশিদ নং: ${receiptNumber}`;
-            document.getElementById('rcptStudentName').textContent = data.studentName;
-            document.getElementById('rcptClass').textContent = data.studentClass;
-            document.getElementById('rcptFatherName').textContent = data.fatherName;
-            document.getElementById('rcptDate').textContent = formatBengaliDate(currentDate);
-            document.getElementById('rcptMonths').textContent = toBengaliNumber(data.paidMonths);
-            document.getElementById('rcptAmount').textContent = formatCurrency(data.paidAmount);
-            document.getElementById('rcptPaymentMethod').textContent = data.paymentMethod;
+// Month name conversion
+const monthNames = {
+    '01': 'জানুয়ারি', '02': 'ফেব্রুয়ারি', '03': 'মার্চ',
+    '04': 'এপ্রিল', '05': 'মে', '06': 'জুন',
+    '07': 'জুলাই', '08': 'আগস্ট', '09': 'সেপ্টেম্বর',
+    '10': 'অক্টোবর', '11': 'নভেম্বর', '12': 'ডিসেম্বর'
+};
 
-            // Handle exam fee
-            const examRow = document.getElementById('rcptExamRow');
-            if (data.examFeeAmount > 0) {
-                examRow.style.display = 'table-row';
-                document.getElementById('rcptExamFee').textContent = formatCurrency(data.examFeeAmount);
-            } else {
-                examRow.style.display = 'none';
+// Generate unique receipt number
+function generateReceiptNumber() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    // Try to get counter from localStorage
+    const savedCounter = localStorage.getItem('receiptCounter');
+    if (savedCounter) {
+        receiptCounter = parseInt(savedCounter) + 1;
+    }
+    
+    localStorage.setItem('receiptCounter', receiptCounter);
+    
+    return `NQM-${year}${month}${day}-${String(receiptCounter).padStart(3, '0')}`;
+}
+
+// Format date in Bengali
+function formatBengaliDate(date) {
+    const day = toBengaliNumber(date.getDate());
+    const month = monthNames[String(date.getMonth() + 1).padStart(2, '0')];
+    const year = toBengaliNumber(date.getFullYear());
+    
+    return `${day} ${month}, ${year}`;
+}
+
+// Format currency in Bengali
+function formatCurrency(amount) {
+    return `${toBengaliNumber(amount)} ৳`;
+}
+
+// Generate and show receipt
+function generateReceipt(data) {
+    const receiptNumber = generateReceiptNumber();
+    const currentDate = data.paymentDate || new Date();
+    
+    // Store current receipt data
+    currentReceiptData = {
+        ...data,
+        receiptNumber,
+        date: formatBengaliDate(currentDate)
+    };
+    
+    // Update receipt fields
+    document.getElementById('receiptNumber').textContent = `রশিদ নং: ${receiptNumber}`;
+    document.getElementById('rcptStudentName').textContent = data.studentName;
+    document.getElementById('rcptClass').textContent = data.studentClass;
+    document.getElementById('rcptFatherName').textContent = data.fatherName;
+    document.getElementById('rcptDate').textContent = formatBengaliDate(currentDate);
+    document.getElementById('rcptMonths').textContent = toBengaliNumber(data.paidMonths);
+    document.getElementById('rcptAmount').textContent = formatCurrency(data.paidAmount);
+    document.getElementById('rcptPaymentMethod').textContent = data.paymentMethod;
+    
+    // Handle exam fee
+    const examRow = document.getElementById('rcptExamRow');
+    if (data.examFeeAmount > 0) {
+        examRow.style.display = 'table-row';
+        document.getElementById('rcptExamFee').textContent = formatCurrency(data.examFeeAmount);
+    } else {
+        examRow.style.display = 'none';
+    }
+    
+    // Calculate total
+    document.getElementById('rcptTotal').textContent = formatCurrency(data.totalAmount);
+    
+    // Show modal
+    document.getElementById('receiptModal').classList.add('show');
+}
+
+// Close receipt modal
+function closeReceiptModal() {
+    document.getElementById('receiptModal').classList.remove('show');
+}
+
+// Download receipt as PDF
+async function downloadReceiptPDF() {
+    const downloadBtn = document.querySelector('.btn-download-pdf');
+    const originalText = downloadBtn.innerHTML;
+    
+    // Show loading state
+    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> তৈরি হচ্ছে...';
+    downloadBtn.disabled = true;
+    
+    try {
+        const element = document.getElementById('receipt');
+        
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: `Receipt_NQM_${currentReceiptData.studentName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                logging: false
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait'
             }
+        };
+        
+        // Generate PDF
+        await html2pdf().set(opt).from(element).save();
+        
+        showToast('রশিদ সফলভাবে ডাউনলোড হয়েছে!', 'success');
+        
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        showToast('PDF তৈরিতে সমস্যা হয়েছে।', 'error');
+    } finally {
+        // Restore button
+        downloadBtn.innerHTML = originalText;
+        downloadBtn.disabled = false;
+    }
+}
 
-            // Calculate total
-            document.getElementById('rcptTotal').textContent = formatCurrency(data.totalAmount);
-
-            // Show modal
-            document.getElementById('receiptModal').classList.add('show');
-        }
-
-        // Close receipt modal
-        function closeReceiptModal() {
-            document.getElementById('receiptModal').classList.remove('show');
-        }
-
-        // Download receipt as PDF
-        async function downloadReceiptPDF() {
-            const downloadBtn = document.querySelector('.btn-download-pdf');
-            const originalText = downloadBtn.innerHTML;
-
-            // Show loading state
-            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> তৈরি হচ্ছে...';
-            downloadBtn.disabled = true;
-
-            try {
-                const element = document.getElementById('receipt');
-
-                const opt = {
-                    margin: [10, 10, 10, 10],
-                    filename: `Receipt_NQM_${currentReceiptData.studentName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: {
-                        scale: 2,
-                        useCORS: true,
-                        letterRendering: true,
-                        logging: false
-                    },
-                    jsPDF: {
-                        unit: 'mm',
-                        format: 'a4',
-                        orientation: 'portrait'
-                    }
-                };
-
-                // Generate PDF
-                await html2pdf().set(opt).from(element).save();
-
-                showToast('রশিদ সফলভাবে ডাউনলোড হয়েছে!', 'success');
-
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                showToast('PDF তৈরিতে সমস্যা হয়েছে।', 'error');
-            } finally {
-                // Restore button
-                downloadBtn.innerHTML = originalText;
-                downloadBtn.disabled = false;
-            }
-        }
-
-        // Share receipt via WhatsApp
-        function shareReceiptWhatsApp() {
-            if (!currentReceiptData) {
-                showToast('রশিদ তৈরি করুন প্রথমে', 'error');
-                return;
-            }
-
-            const message = `📎 *বেতন রশিদ - নুরুল কোরআন কওমী মাদ্রাসা*
+// Share receipt via WhatsApp
+function shareReceiptWhatsApp() {
+    if (!currentReceiptData) {
+        showToast('রশিদ তৈরি করুন প্রথমে', 'error');
+        return;
+    }
+    
+    const message = `📎 *বেতন রশিদ - নুরুল কোরআন কওমী মাদ্রাসা*
 
 🎓 শিক্ষার্থী: ${currentReceiptData.studentName}
 👨 পিতার নাম: ${currentReceiptData.fatherName}
@@ -3898,25 +3859,24 @@ ${currentReceiptData.examFeeAmount > 0 ? `📝 পরীক্ষার ফি: 
 
 ✅ বেতন সফলভাবে গ্রহণ করা হয়েছে。
 জাযাকাল্লাহু খাইরান।`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+}
 
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('receiptModal');
+    if (e.target === modal) {
+        closeReceiptModal();
+    }
+});
 
-            window.open(whatsappUrl, '_blank');
-        }
+console.log('✅ Receipt System Loaded - Auto PDF & WhatsApp Ready');
 
-        // Close modal when clicking outside
-        document.addEventListener('click', function (e) {
-            const modal = document.getElementById('receiptModal');
-            if (e.target === modal) {
-                closeReceiptModal();
-            }
-        });
-
-        console.log('✅ Receipt System Loaded - Auto PDF & WhatsApp Ready');
-
-
-    </script>
+   
+   </script>
 </body>
-
 </html>
